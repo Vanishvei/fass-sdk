@@ -67,10 +67,6 @@ func initServerInfo() {
 			continue
 		}
 
-		if !strings.HasPrefix(version, "3.1") {
-			panic(fmt.Sprintf("unsupported endpoint %s api version %s", endpoint, version))
-		}
-
 		globalConfig.ApiQPS = &qps
 		globalConfig.ApiVersion = &version
 		globalConfig.CurrentEndpoint = &endpoint
@@ -104,7 +100,7 @@ func getServerInfo(endpoint string) (version string, qps int, err error) {
 	}
 
 	_ = response.Body.Close()
-	return _serverInfo.APIVersion(), _serverInfo.ApiQps, nil
+	return _serverInfo.APIVersion(endpoint), _serverInfo.ApiQps, nil
 }
 
 type serverInfo struct {
@@ -116,7 +112,7 @@ type serverInfo struct {
 	ApiQps      int    `json:"api_qps"`
 }
 
-func (s serverInfo) APIVersion() string {
+func (s serverInfo) APIVersion(endpoint string) string {
 	if len(s.Version) == 0 {
 		panic("Get API version failed")
 	}
@@ -124,19 +120,19 @@ func (s serverInfo) APIVersion() string {
 	versionSectorCount := 3
 	_version := strings.Split(s.Version, ".")
 	if len(_version) != versionSectorCount {
-		panic(fmt.Sprintf("Invalid API version %s", s.Version))
+		panic(fmt.Sprintf("Endpoint %s invalid API version %s", endpoint, s.Version))
 	}
 
 	for _, index := range []int{0, 1, 2} {
 		_, err := strconv.Atoi(_version[index])
 		if err != nil {
-			panic(fmt.Sprintf("Invalid API version %s", s.Version))
+			panic(fmt.Sprintf("Endpoint %s invalid API version %s", endpoint, s.Version))
 		}
 	}
 
 	apiVersion, ok := allowVersionSet[s.Version[0:3]]
 	if !ok {
-		panic(fmt.Sprintf("API version %s is not supported", s.Version))
+		panic(fmt.Sprintf("Unsupported endpoint %s api version %s", endpoint, s.Version))
 	}
 
 	return apiVersion
