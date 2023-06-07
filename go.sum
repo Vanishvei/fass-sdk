@@ -1,0 +1,6 @@
+github.com/Vanishvei/fass-sdk-parameters v0.0.2 h1:yOaiabVtPx/178JPefo0RVNrp5LtLFSGn6G5/RguoAU=
+github.com/Vanishvei/fass-sdk-parameters v0.0.2/go.mod h1:LbSC+9N9Fs84eWsVu1d+7GEd6xYHppBHJTUPhSaYVaY=
+github.com/Vanishvei/fass-sdk-responses v0.0.1 h1:jOF+emiZDRoej6LpHy5NyGwd8GgfaEovMFdgI9JX5BA=
+github.com/Vanishvei/fass-sdk-responses v0.0.1/go.mod h1:K49cEm5toh1Wklcb6Hv/8vz2qRmFEEdt/Q1UGAo4oTs=
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
