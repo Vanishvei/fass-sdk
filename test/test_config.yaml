@@ -1,0 +1,14 @@
+fass_api_points:
+  - 172.16.175.104
+#  - 172.16.175.102
+#  - 172.16.175.103
+
+fass_api_port: 8000
+
+connect_timeout: 1
+
+read_timeout: 300
+
+retry_count: 3
+
+backoff: 3

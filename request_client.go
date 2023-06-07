@@ -8,6 +8,7 @@ package requests
 // Description:
 
 import (
+	"errors"
 	"github.com/Vanishvei/fass-sdk/horizontal"
 
 	responses "github.com/Vanishvei/fass-sdk-responses"
@@ -111,11 +112,18 @@ func (client *Client) doRequest(request *horizontal.Request) (_result *responses
 				return _result, _err
 			}
 
+			__result := &responses.SuzakuResponse{}
 			_err = horizontal.Convert(map[string]interface{}{
 				"headers":    response_.Headers,
 				"statusCode": horizontal.IntValue(response_.StatusCode),
-			}, &_result)
-			return _result, _err
+			}, __result)
+
+			if _err != nil {
+				return __result, _err
+			}
+
+			errMsg, _ := response_.ReadBody()
+			return __result, errors.New(string(errMsg))
 
 		}()
 		if !horizontal.BoolValue(horizontal.Retryable(_err)) {
@@ -146,7 +154,7 @@ func (client *Client) CallApi(request *horizontal.Request) (_result *responses.S
 		_err = horizontal.NewSDKError(map[string]interface{}{
 			"code":       1,
 			"message":    _err.Error(),
-			"request_id": _resp.RequestId.String(),
+			"request_id": horizontal.StringValue(request.GetRequestId()),
 			"data":       nil,
 		})
 		return _result, _err
