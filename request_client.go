@@ -25,11 +25,11 @@ type fassClient struct {
 
 func newClient() (*fassClient, error) {
 	client := new(fassClient)
-	err := client.init(&GlobalConfig)
+	err := client.init(&globalConfig)
 	return client, err
 }
 
-func (client *fassClient) init(config *Config) (_err error) {
+func (client *fassClient) init(config *config) (_err error) {
 	if horizontal.BoolValue(horizontal.IsUnset(config)) {
 		_err = horizontal.NewSDKError(map[string]interface{}{
 			"code":       2,
@@ -80,7 +80,7 @@ func (client *fassClient) doRequest(request *horizontal.Request) (_result *respo
 		request.Headers,
 	)
 
-	GlobalConfig.SwitchEndpoint()
+	globalConfig.SwitchEndpoint()
 
 	_resp := &responses.SuzakuResponse{}
 	for _retryTimes := 0; horizontal.BoolValue(horizontal.AllowRetry(_runtime["retry"], horizontal.Int(_retryTimes))); _retryTimes++ {
