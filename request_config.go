@@ -13,8 +13,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 )
+
+var allowVersionSet = map[string]string{"3.1": "v3"}
 
 type config struct {
 	Port            *int      `json:"port"`
@@ -101,7 +104,7 @@ func getServerInfo(endpoint string) (version string, qps int, err error) {
 	}
 
 	_ = response.Body.Close()
-	return _serverInfo.Version, _serverInfo.ApiQps, nil
+	return _serverInfo.APIVersion(), _serverInfo.ApiQps, nil
 }
 
 type serverInfo struct {
@@ -111,4 +114,30 @@ type serverInfo struct {
 	WorkModel   string `json:"work_model"`
 	Time        string `json:"time"`
 	ApiQps      int    `json:"api_qps"`
+}
+
+func (s serverInfo) APIVersion() string {
+	if len(s.Version) == 0 {
+		panic("Get API version failed")
+	}
+
+	versionSectorCount := 3
+	_version := strings.Split(s.Version, ".")
+	if len(_version) != versionSectorCount {
+		panic(fmt.Sprintf("Invalid API version %s", s.Version))
+	}
+
+	for _, index := range []int{0, 1, 2} {
+		_, err := strconv.Atoi(_version[index])
+		if err != nil {
+			panic(fmt.Sprintf("Invalid API version %s", s.Version))
+		}
+	}
+
+	apiVersion, ok := allowVersionSet[s.Version[0:3]]
+	if !ok {
+		panic(fmt.Sprintf("API version %s is not supported", s.Version))
+	}
+
+	return apiVersion
 }
