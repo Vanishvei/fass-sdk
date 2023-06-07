@@ -16,7 +16,7 @@ import (
 
 func ListAccount(parameter *parameters.ListAccountParameter, requestId string) (
 	*responses.ListAccountResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func ListAccount(parameter *parameters.ListAccountParameter, requestId string) (
 	_request.SetQuery(parameter.GetQuery())
 	_request.SetPath("acl/account")
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func ListAccount(parameter *parameters.ListAccountParameter, requestId string) (
 
 func CreateAccount(parameter *parameters.CreateAccountParameter, requestId string) (
 	*responses.CreateAccountResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func CreateAccount(parameter *parameters.CreateAccountParameter, requestId strin
 	_request.SetMethodPOST()
 	_request.SetBody(parameter)
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func CreateAccount(parameter *parameters.CreateAccountParameter, requestId strin
 
 func RetrieveAccount(parameters *parameters.RetrieveAccountParameter, requestId string) (
 	*responses.RetrieveAccountResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func RetrieveAccount(parameters *parameters.RetrieveAccountParameter, requestId 
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameters.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func RetrieveAccount(parameters *parameters.RetrieveAccountParameter, requestId 
 }
 
 func DeleteAccount(parameters *parameters.DeleteAccountParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -86,13 +86,13 @@ func DeleteAccount(parameters *parameters.DeleteAccountParameter, requestId stri
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameters.GetPath())
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func ListGroup(parameters *parameters.ListAccountParameter, requestId string) (
 	*responses.ListGroupResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func ListGroup(parameters *parameters.ListAccountParameter, requestId string) (
 	_request.SetPath("acl/group")
 	_request.SetQuery(parameters.GetQuery())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func ListGroup(parameters *parameters.ListAccountParameter, requestId string) (
 
 func RetrieveGroup(parameters *parameters.RetrieveGroupParameter, requestId string) (
 	*responses.RetrieveGroupResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func RetrieveGroup(parameters *parameters.RetrieveGroupParameter, requestId stri
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameters.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func RetrieveGroup(parameters *parameters.RetrieveGroupParameter, requestId stri
 }
 
 func DeleteGroup(parameters *parameters.DeleteGroupParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -141,13 +141,13 @@ func DeleteGroup(parameters *parameters.DeleteGroupParameter, requestId string) 
 	_request.SetPath(parameters.GetPath())
 	_request.SetMethodDELETE()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func AddQualifierToGroup(parameter *parameters.AddQualifierToGroupParameter, requestId string) (
 	*responses.AddQualifierToGroupResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func AddQualifierToGroup(parameter *parameters.AddQualifierToGroupParameter, req
 	_request.SetBody(parameter)
 	_request.SetMethodPUT()
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func AddQualifierToGroup(parameter *parameters.AddQualifierToGroupParameter, req
 
 func RemoveQualifierFromGroup(parameter *parameters.RemoveQualifierFromGroupParameter, requestId string) (
 	*responses.RemoveQualifierFromGroupResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +177,7 @@ func RemoveQualifierFromGroup(parameter *parameters.RemoveQualifierFromGroupPara
 	_request.SetMethodPUT()
 	_request.SetBody(parameter)
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}

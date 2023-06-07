@@ -16,7 +16,7 @@ import (
 
 func RetrieveSnapshot(parameter *parameters.RetrieveSnapshotParameter, requestId string) (
 	*responses.RetrieveSnapshotResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func RetrieveSnapshot(parameter *parameters.RetrieveSnapshotParameter, requestId
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func RetrieveSnapshot(parameter *parameters.RetrieveSnapshotParameter, requestId
 
 func ListSnapshot(parameter *parameters.ListSnapshotParameter, requestId string) (
 	*responses.ListSnapshotResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func ListSnapshot(parameter *parameters.ListSnapshotParameter, requestId string)
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func ListSnapshot(parameter *parameters.ListSnapshotParameter, requestId string)
 
 func CreateSnapshot(parameter *parameters.CreateSnapshotParameter, requestId string) (
 	*responses.CreateSnapshotResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func CreateSnapshot(parameter *parameters.CreateSnapshotParameter, requestId str
 	_request.SetBody(parameter)
 	_request.SetMethodPOST()
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func CreateSnapshot(parameter *parameters.CreateSnapshotParameter, requestId str
 }
 
 func RevertSnapshot(parameter *parameters.RevertSnapshotParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -87,12 +87,12 @@ func RevertSnapshot(parameter *parameters.RevertSnapshotParameter, requestId str
 	_request.SetPath("snapshot")
 	_request.SetMethodPUT()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func DeleteSnapshot(parameter *parameters.DeleteSnapshotParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -101,6 +101,6 @@ func DeleteSnapshot(parameter *parameters.DeleteSnapshotParameter, requestId str
 	_request.SetPath(parameter.GetPath())
 	_request.SetMethodDELETE()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }

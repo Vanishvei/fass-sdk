@@ -16,7 +16,7 @@ import (
 
 func CreateSubsys(parameter *parameters.CreateSubsysParameter, requestId string) (
 	*responses.CreateSubsysResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func CreateSubsys(parameter *parameters.CreateSubsysParameter, requestId string)
 	_request.SetBody(parameter)
 	_request.SetPath("subsys")
 	_request.SetMethodPOST()
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func CreateSubsys(parameter *parameters.CreateSubsysParameter, requestId string)
 
 func ListSubsys(parameter *parameters.ListSubsysParameter, requestId string) (
 	*responses.ListSubsysResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func ListSubsys(parameter *parameters.ListSubsysParameter, requestId string) (
 	_request.SetPath("pool")
 	_request.SetQuery(parameter.GetQuery())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func ListSubsys(parameter *parameters.ListSubsysParameter, requestId string) (
 
 func RetrieveSubsys(parameter *parameters.RetrieveSubsysParameter, requestId string) (
 	*responses.RetrieveSubsysResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func RetrieveSubsys(parameter *parameters.RetrieveSubsysParameter, requestId str
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func RetrieveSubsys(parameter *parameters.RetrieveSubsysParameter, requestId str
 }
 
 func DeleteSubsys(parameter *parameters.DeleteSubsysParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -87,12 +87,12 @@ func DeleteSubsys(parameter *parameters.DeleteSubsysParameter, requestId string)
 	_request.SetQuery(parameter.GetQuery())
 	_request.SetMethodDELETE()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func ExportSubsys(parameter *parameters.ExportSubsysParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -102,12 +102,12 @@ func ExportSubsys(parameter *parameters.ExportSubsysParameter, requestId string)
 	_request.SetMethodPUT()
 	_request.SetBody(parameter)
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func UnexportSubsys(parameter *parameters.UnexportSubsysParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -117,13 +117,13 @@ func UnexportSubsys(parameter *parameters.UnexportSubsysParameter, requestId str
 	_request.SetMethodPUT()
 	_request.SetBody(parameter)
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func RetrieveSubsysAuth(parameter *parameters.RetrieveSubsysAuthParameter,
 	requestId string) (*responses.RetrieveSubsysAuthResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func RetrieveSubsysAuth(parameter *parameters.RetrieveSubsysAuthParameter,
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func RetrieveSubsysAuth(parameter *parameters.RetrieveSubsysAuthParameter,
 }
 
 func SetSubsysAuth(parameter *parameters.SetSubsysAuthParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -152,12 +152,12 @@ func SetSubsysAuth(parameter *parameters.SetSubsysAuthParameter, requestId strin
 	_request.SetMethodPUT()
 	_request.SetBody(parameter)
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func RemoveSubsysAuth(parameter *parameters.RemoveSubsysAuthParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -166,13 +166,13 @@ func RemoveSubsysAuth(parameter *parameters.RemoveSubsysAuthParameter, requestId
 	_request.SetPath(parameter.GetPath())
 	_request.SetMethodPUT()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChapParameter, requestId string) (
 	*responses.RetrieveSubsysChapResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChapParameter, reque
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +191,7 @@ func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChapParameter, reque
 }
 
 func SetSubsysChap(parameter *parameters.SetSubsysChapParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -201,12 +201,12 @@ func SetSubsysChap(parameter *parameters.SetSubsysChapParameter, requestId strin
 	_request.SetMethodPUT()
 	_request.SetBody(parameter)
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func RemoveSubsysChap(parameter *parameters.RemoveSubsysChapParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -215,6 +215,6 @@ func RemoveSubsysChap(parameter *parameters.RemoveSubsysChapParameter, requestId
 	_request.SetPath(parameter.GetPath())
 	_request.SetMethodPUT()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }

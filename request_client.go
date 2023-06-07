@@ -14,7 +14,7 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
-type Client struct {
+type fassClient struct {
 	Port       *int
 	Endpoint   *string
 	Method     *string
@@ -23,13 +23,13 @@ type Client struct {
 	ApiVersion *string
 }
 
-func NewClient() (*Client, error) {
-	client := new(Client)
+func newClient() (*fassClient, error) {
+	client := new(fassClient)
 	err := client.init(&GlobalConfig)
 	return client, err
 }
 
-func (client *Client) init(config *Config) (_err error) {
+func (client *fassClient) init(config *Config) (_err error) {
 	if horizontal.BoolValue(horizontal.IsUnset(config)) {
 		_err = horizontal.NewSDKError(map[string]interface{}{
 			"code":       2,
@@ -53,7 +53,7 @@ func (client *Client) init(config *Config) (_err error) {
 	return nil
 }
 
-func (client *Client) doRequest(request *horizontal.Request) (_result *responses.SuzakuResponse, _err error) {
+func (client *fassClient) doRequest(request *horizontal.Request) (_result *responses.SuzakuResponse, _err error) {
 	_err = horizontal.Validate(request)
 	if _err != nil {
 		return _result, _err
@@ -72,7 +72,7 @@ func (client *Client) doRequest(request *horizontal.Request) (_result *responses
 	request.Headers = horizontal.Merge(map[string]*string{
 		"host":         request.GetEndpoint(),
 		"requestId":    request.GetRequestId(),
-		"user-agent":   horizontal.String("fass_sdk-golang/v1.0"),
+		"user-agent":   horizontal.String("fass-sdk-golang/v1.0"),
 		"accept":       horizontal.String("application/json"),
 		"content-type": horizontal.String("application/json; charset=utf-8"),
 	},
@@ -134,7 +134,7 @@ func (client *Client) doRequest(request *horizontal.Request) (_result *responses
 	return _resp, _err
 }
 
-func (client *Client) CallApi(request *horizontal.Request) (_result *responses.SuzakuResponse, _err error) {
+func (client *fassClient) callApi(request *horizontal.Request) (_result *responses.SuzakuResponse, _err error) {
 	if horizontal.BoolValue(horizontal.IsUnset(request)) {
 		_err = horizontal.NewSDKError(map[string]interface{}{
 			"code":       2,

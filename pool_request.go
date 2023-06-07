@@ -16,7 +16,7 @@ import (
 
 func RetrievePool(parameter *parameters.RetrievePoolParameter, requestId string) (
 	*responses.RetrievePoolResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func RetrievePool(parameter *parameters.RetrievePoolParameter, requestId string)
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ import (
 
 func ListVolume(parameter *parameters.ListVolumeParameter, requestId string) (
 	*responses.ListVolumeResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func ListVolume(parameter *parameters.ListVolumeParameter, requestId string) (
 	_request.SetPath("volume")
 	_request.SetQuery(parameter.GetQuery())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func ListVolume(parameter *parameters.ListVolumeParameter, requestId string) (
 
 func RetrieveVolume(parameter *parameters.RetrieveVolumeParameter, requestId string) (
 	*responses.RetrieveVolumeResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func RetrieveVolume(parameter *parameters.RetrieveVolumeParameter, requestId str
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func RetrieveVolume(parameter *parameters.RetrieveVolumeParameter, requestId str
 }
 
 func DeleteVolume(parameter *parameters.DeleteVolumeParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -66,12 +66,12 @@ func DeleteVolume(parameter *parameters.DeleteVolumeParameter, requestId string)
 	_request.SetQuery(parameter.GetQuery())
 	_request.SetMethodDELETE()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func ExpandVolume(parameter *parameters.ExpandVolumeParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -81,13 +81,13 @@ func ExpandVolume(parameter *parameters.ExpandVolumeParameter, requestId string)
 	_request.SetBody(parameter)
 	_request.SetMethodPUT()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func FlattenVolume(parameter *parameters.FlattenVolumeParameter, requestId string) (
 	*responses.FlattenVolumeResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func FlattenVolume(parameter *parameters.FlattenVolumeParameter, requestId strin
 	_request.SetBody(parameter)
 	_request.SetMethodPUT()
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func FlattenVolume(parameter *parameters.FlattenVolumeParameter, requestId strin
 }
 
 func SetQosOfVolume(parameter *parameters.SetQosOfVolumeParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -117,13 +117,13 @@ func SetQosOfVolume(parameter *parameters.SetQosOfVolumeParameter, requestId str
 	_request.SetBody(parameter)
 	_request.SetMethodPUT()
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
 
 func FlattenVolumeProgress(parameter *parameters.GetFlattenVolumeProgress, requestId string) (
 	*responses.FlattenVolumeProgressResponse, error) {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func FlattenVolumeProgress(parameter *parameters.GetFlattenVolumeProgress, reque
 	_request.SetPath(parameter.GetPath())
 	_request.SetBody(parameter)
 
-	resp, err := _client.CallApi(_request)
+	resp, err := _client.callApi(_request)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func FlattenVolumeProgress(parameter *parameters.GetFlattenVolumeProgress, reque
 }
 
 func StopFlattenVolume(parameter *parameters.StopFlattenVolumeParameter, requestId string) error {
-	_client, err := NewClient()
+	_client, err := newClient()
 	if err != nil {
 		return err
 	}
@@ -151,6 +151,6 @@ func StopFlattenVolume(parameter *parameters.StopFlattenVolumeParameter, request
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
 
-	_, err = _client.CallApi(_request)
+	_, err = _client.callApi(_request)
 	return err
 }
