@@ -24,8 +24,11 @@ import (
 var (
 	poolName          = "pool1"
 	subsysName        = "s1000"
+	subsysName1       = "s2000"
+	subsysName2       = "s3000"
 	invalidSubsysName = "s9999"
 	volumeName        = "v1000"
+	snapshotName      = "s1"
 	accountName       = "account_1"
 	password          = "admin@1234"
 	groupName         = "group_1"
@@ -127,6 +130,74 @@ func TestRetrieveSubsysNotExists(t *testing.T) {
 	}
 	fmt.Printf("%s", err.Error())
 	t.FailNow()
+}
+
+func TestCreateSubsysFromVolume(t *testing.T) {
+	requestId := uuid.New().String()
+
+	parameter := parameters.CreateSubsysFromVolumeParameter{}
+	parameter.SetName(subsysName1)
+	parameter.SetPoolName(poolName)
+	parameter.SetSrcVolumeName(volumeName)
+	parameter.InheritQos()
+	parameter.EnableISCSI()
+
+	_, err := fassSDK.CreateSubsysFromVolume(&parameter, requestId)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+		return
+	}
+
+	err = deleteSubsys(subsysName1)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
+func TestCreateSubsysFromSnapshot(t *testing.T) {
+	requestId := uuid.New().String()
+	createSnapshotParameter := parameters.CreateSnapshotParameter{}
+	createSnapshotParameter.SetVolumeName(volumeName)
+	createSnapshotParameter.SetSnapshotName(snapshotName)
+	_, err := fassSDK.CreateSnapshot(&createSnapshotParameter, requestId)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+		return
+	}
+
+	parameter := parameters.CreateSubsysFromSnapshotParameter{}
+	parameter.SetName(subsysName2)
+	parameter.SetPoolName(poolName)
+	parameter.SetSrcVolumeName(volumeName)
+	parameter.SetSrcSnapshotName(snapshotName)
+	parameter.InheritQos()
+	parameter.EnableISCSI()
+
+	_, err = fassSDK.CreateSubsysFromSnapshot(&parameter, requestId)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+		return
+	}
+
+	deleteSnapshotParameter := parameters.DeleteSnapshotParameter{}
+	deleteSnapshotParameter.SetVolumeName(volumeName)
+	deleteSnapshotParameter.SetSnapshotName(snapshotName)
+
+	err = fassSDK.DeleteSnapshot(&deleteSnapshotParameter, requestId)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	err = deleteSubsys(subsysName2)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
 }
 
 func TestListSubsys(t *testing.T) {
@@ -242,16 +313,20 @@ func TestRemoveSubsysChap(t *testing.T) {
 }
 
 func TestDeleteSubsys(t *testing.T) {
-	parameter := parameters.DeleteSubsysParameter{}
-	parameter.SetSubsysName(subsysName)
-	parameter.DeleteVolume()
-	parameter.ForceDelete()
-
-	err := fassSDK.DeleteSubsys(&parameter, uuid.New().String())
+	err := deleteSubsys(subsysName)
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.Fail()
 	}
+}
+
+func deleteSubsys(subsysName_ string) error {
+	parameter := parameters.DeleteSubsysParameter{}
+	parameter.SetSubsysName(subsysName_)
+	parameter.DeleteVolume()
+	parameter.ForceDelete()
+
+	return fassSDK.DeleteSubsys(&parameter, uuid.New().String())
 }
 
 func TestMain(m *testing.M) {

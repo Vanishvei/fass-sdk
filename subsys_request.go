@@ -35,6 +35,64 @@ func CreateSubsys(parameter *parameters.CreateSubsysParameter, requestId string)
 	return data, err
 }
 
+func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolumeParameter,
+	requestId string) (*responses.CreateSubsysResponse, error) {
+	_client, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	// create temp snapshot
+	_request := horizontal.NewRequest(requestId)
+	createSnapshotParameter := &parameters.CreateSnapshotParameter{}
+	createSnapshotParameter.SetVolumeName(parameter.GetSourceVolumeName())
+	createSnapshotParameter.SetSnapshotName(parameter.GetSourceSnapshotName())
+	_, err = CreateSnapshot(createSnapshotParameter, requestId)
+	if err != nil {
+		return nil, err
+	}
+
+	// use tmp snapshot create volume
+	_request.SetBody(parameter)
+	_request.SetPath("subsys")
+	_request.SetMethodPOST()
+	resp, err := _client.callApi(_request)
+	if err != nil {
+		return nil, err
+	}
+
+	// delete tmp snapshot
+	deleteSnapshotParameter := &parameters.DeleteSnapshotParameter{}
+	deleteSnapshotParameter.SetVolumeName(parameter.GetSourceVolumeName())
+	deleteSnapshotParameter.SetSnapshotName(parameter.GetSourceSnapshotName())
+	_ = DeleteSnapshot(deleteSnapshotParameter, requestId)
+
+	data := &responses.CreateSubsysResponse{}
+	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
+	return data, err
+}
+
+func CreateSubsysFromSnapshot(parameter *parameters.CreateSubsysFromSnapshotParameter,
+	requestId string) (*responses.CreateSubsysResponse, error) {
+	_client, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	_request := horizontal.NewRequest(requestId)
+	_request.SetBody(parameter)
+	_request.SetPath("subsys")
+	_request.SetMethodPOST()
+	resp, err := _client.callApi(_request)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &responses.CreateSubsysResponse{}
+	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
+	return data, err
+}
+
 func ListSubsys(parameter *parameters.ListSubsysParameter, requestId string) (
 	*responses.ListSubsysResponse, error) {
 	_client, err := newClient()

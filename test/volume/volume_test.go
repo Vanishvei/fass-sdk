@@ -106,15 +106,15 @@ func teardown() {
 }
 
 func createVolumeFromSnapshot(subsysName, volumeName string) error {
-	createSubsysParameter := parameters.CreateSubsysParameter{}
-	createSubsysParameter.SetPoolName(poolName)
+	createSubsysParameter := parameters.CreateSubsysFromSnapshotParameter{}
 	createSubsysParameter.SetName(subsysName)
+	createSubsysParameter.SetPoolName(poolName)
 	createSubsysParameter.SetVolumeName(volumeName)
 	createSubsysParameter.SetSrcVolumeName(srcVolumeName)
 	createSubsysParameter.SetSrcSnapshotName(srcSnapshotName)
 	createSubsysParameter.EnableISCSI()
 
-	_, err := fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
+	_, err := fassSDK.CreateSubsysFromSnapshot(&createSubsysParameter, uuid.New().String())
 	if err != nil {
 		return err
 	}
