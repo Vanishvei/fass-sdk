@@ -21,6 +21,7 @@ import (
 )
 
 var poolName = "pool3"
+var invalidPoolName = "pool9999"
 
 func TestRetrievePool(t *testing.T) {
 	parameter := parameters.RetrievePoolParameter{}
@@ -30,4 +31,24 @@ func TestRetrievePool(t *testing.T) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
+}
+
+func TestRetrievePoolNotExists(t *testing.T) {
+	parameter := parameters.RetrievePoolParameter{}
+	parameter.SetPoolName(invalidPoolName)
+	_, err := fassSDK.RetrievePool(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fe, ok := err.(*fassSDK.SDKError)
+		if ok {
+			if !fe.IsNotExists() {
+				t.FailNow()
+			}
+			if fe.IsExists() {
+				t.FailNow()
+			}
+			return
+		}
+	}
+	fmt.Printf("%s", err.Error())
+	t.FailNow()
 }

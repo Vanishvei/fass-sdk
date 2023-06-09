@@ -22,14 +22,15 @@ import (
 )
 
 var (
-	poolName      = "pool1"
-	subsysName    = "s1000"
-	volumeName    = "v1000"
-	accountName   = "account_1"
-	password      = "admin@1234"
-	groupName     = "group_1"
-	hostName      = "client_1"
-	qualifierList = []string{
+	poolName          = "pool1"
+	subsysName        = "s1000"
+	invalidSubsysName = "s9999"
+	volumeName        = "v1000"
+	accountName       = "account_1"
+	password          = "admin@1234"
+	groupName         = "group_1"
+	hostName          = "client_1"
+	qualifierList     = []string{
 		"nqn.2019-03.suzaku:s1000",
 		"iqn.2019-03.cn.suzaku:s1000",
 	}
@@ -103,6 +104,29 @@ func TestRetrieveSubsys(t *testing.T) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
+}
+
+func TestRetrieveSubsysNotExists(t *testing.T) {
+	parameter := parameters.RetrieveSubsysParameter{}
+	parameter.SetSubsysName(invalidSubsysName)
+
+	_, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fe, ok := err.(*fassSDK.SDKError)
+		if ok {
+			if !fe.IsNotExists() {
+				t.Fail()
+				return
+			}
+			if fe.IsExists() {
+				t.Fail()
+				return
+			}
+			return
+		}
+	}
+	fmt.Printf("%s", err.Error())
+	t.FailNow()
 }
 
 func TestListSubsys(t *testing.T) {

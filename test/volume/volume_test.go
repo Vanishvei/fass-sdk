@@ -23,15 +23,16 @@ import (
 )
 
 var (
-	poolName        = "pool1"
-	srcSubsysName   = "s1000"
-	srcVolumeName   = "v1000"
-	srcSnapshotName = "snap1000"
-	newSubsysName1  = "s2000"
-	newVolumeName1  = "v2000"
-	newSubsysName2  = "s3000"
-	newVolumeName2  = "v3000"
-	taskId          = ""
+	poolName          = "pool1"
+	srcSubsysName     = "s1000"
+	srcVolumeName     = "v1000"
+	srcSnapshotName   = "snap1000"
+	newSubsysName1    = "s2000"
+	newVolumeName1    = "v2000"
+	newSubsysName2    = "s3000"
+	newVolumeName2    = "v3000"
+	invalidVolumeName = "v9999"
+	taskId            = ""
 )
 
 func setup() {
@@ -156,6 +157,29 @@ func TestRetrieveVolume(t *testing.T) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
+}
+
+func TestRetrieveVolumeNotExists(t *testing.T) {
+	parameter := parameters.RetrieveVolumeParameter{}
+	parameter.SetVolumeName(invalidVolumeName)
+
+	_, err := fassSDK.RetrieveVolume(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fe, ok := err.(*fassSDK.SDKError)
+		if ok {
+			if !fe.IsNotExists() {
+				t.Fail()
+				return
+			}
+			if !fe.IsExists() {
+				t.Fail()
+				return
+			}
+			return
+		}
+	}
+	fmt.Printf("%s", err.Error())
+	t.FailNow()
 }
 
 func TestExpandVolume(t *testing.T) {

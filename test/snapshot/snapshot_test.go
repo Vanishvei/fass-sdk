@@ -22,10 +22,11 @@ import (
 )
 
 var (
-	poolName     = "pool1"
-	subsysName   = "s1000"
-	volumeName   = "v1000"
-	snapshotName = "snap1000"
+	poolName            = "pool1"
+	subsysName          = "s1000"
+	volumeName          = "v1000"
+	snapshotName        = "snap1000"
+	invalidSnapshotName = "snap9999"
 )
 
 func setup() {
@@ -80,6 +81,29 @@ func TestRetrieveSnapshot(t *testing.T) {
 		fmt.Printf("%s", err.Error())
 		t.Fail()
 	}
+}
+
+func TestRetrieveSnapshotNotExists(t *testing.T) {
+	parameter := parameters.RetrieveSnapshotParameter{}
+	parameter.SetVolumeName(volumeName)
+	parameter.SetSnapshotName(invalidSnapshotName)
+	_, err := fassSDK.RetrieveSnapshot(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fe, ok := err.(*fassSDK.SDKError)
+		if ok {
+			if !fe.IsNotExists() {
+				t.Fail()
+				return
+			}
+			if fe.IsExists() {
+				t.Fail()
+				return
+			}
+			return
+		}
+	}
+	fmt.Printf("%s", err.Error())
+	t.Fail()
 }
 
 func TestListSnapshot(t *testing.T) {

@@ -29,6 +29,8 @@ func newClient() (*fassClient, error) {
 	return client, err
 }
 
+type SDKError = horizontal.SDKError
+
 func (client *fassClient) init(config *config) (_err error) {
 	if horizontal.BoolValue(horizontal.IsUnset(config)) {
 		_err = horizontal.NewSDKError(map[string]interface{}{

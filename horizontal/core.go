@@ -34,6 +34,38 @@ var basicTypes = []string{
 // Verify whether the parameters meet the requirements
 var validateParams = []string{"require", "pattern", "maxLength", "minLength", "maximum", "minimum", "maxItems", "minItems"}
 
+const (
+	taskNotExist     = "200001"
+	poolNotExist     = "400003"
+	subsysNotExist   = "500002"
+	volumeNotExist   = "600002"
+	snapshotNotExist = "700002"
+	accountNotExist  = "800001"
+	groupNotExist    = "800002"
+
+	poolAlreadyExists     = "400002"
+	subsysAlreadyExists   = "500001"
+	volumeAlreadyExists   = "600001"
+	snapshotAlreadyExists = "700001"
+)
+
+var notExistsCodeSet = map[string]struct{}{
+	poolNotExist:     {},
+	subsysNotExist:   {},
+	volumeNotExist:   {},
+	snapshotNotExist: {},
+	accountNotExist:  {},
+	groupNotExist:    {},
+	taskNotExist:     {},
+}
+
+var existsCodeSet = map[string]struct{}{
+	poolAlreadyExists:     {},
+	subsysAlreadyExists:   {},
+	volumeAlreadyExists:   {},
+	snapshotAlreadyExists: {},
+}
+
 // Request is used wrap http request
 type Request struct {
 	port       *int
@@ -161,6 +193,33 @@ type SDKError struct {
 	RequestId  *string
 }
 
+func (err *SDKError) SetErrMsg(msg string) {
+	err.errMsg = String(msg)
+}
+
+func (err *SDKError) Error() string {
+	if err.errMsg == nil {
+		str := fmt.Sprintf("SDKError:\n   RequestId: %s\n   StatusCode: %d\n   Code: %s\n   Message: %s\n   Data: %s\n",
+			StringValue(err.RequestId),
+			IntValue(err.StatusCode),
+			StringValue(err.Code),
+			StringValue(err.Message),
+			StringValue(err.Data))
+		err.SetErrMsg(str)
+	}
+	return StringValue(err.errMsg)
+}
+
+func (err *SDKError) IsExists() bool {
+	_, ok := existsCodeSet[*err.Code]
+	return ok
+}
+
+func (err *SDKError) IsNotExists() bool {
+	_, ok := notExistsCodeSet[*err.Code]
+	return ok
+}
+
 // RuntimeObject is used for converting http configuration
 type RuntimeObject struct {
 	ConnectTimeout *int `json:"connectTimeout"`
@@ -230,23 +289,6 @@ func NewSDKError(obj map[string]interface{}) *SDKError {
 	}
 
 	return err
-}
-
-func (err *SDKError) SetErrMsg(msg string) {
-	err.errMsg = String(msg)
-}
-
-func (err *SDKError) Error() string {
-	if err.errMsg == nil {
-		str := fmt.Sprintf("SDKError:\n   RequestId: %s\n   StatusCode: %d\n   Code: %s\n   Message: %s\n   Data: %s\n",
-			StringValue(err.RequestId),
-			IntValue(err.StatusCode),
-			StringValue(err.Code),
-			StringValue(err.Message),
-			StringValue(err.Data))
-		err.SetErrMsg(str)
-	}
-	return StringValue(err.errMsg)
 }
 
 func Recover(in interface{}) error {
