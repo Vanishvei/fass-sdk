@@ -185,7 +185,7 @@ func TestRetrieveVolumeNotExists(t *testing.T) {
 func TestExpandVolume(t *testing.T) {
 	parameter := parameters.ExpandVolumeParameter{}
 	parameter.SetVolumeName(newVolumeName1)
-	parameter.SetCapacityGB(20)
+	parameter.SetNewCapacityGB(20)
 
 	err := fassSDK.ExpandVolume(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
