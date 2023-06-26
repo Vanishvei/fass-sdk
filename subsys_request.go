@@ -46,7 +46,7 @@ func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolumeParamete
 	_request := horizontal.NewRequest(requestId)
 	createSnapshotParameter := &parameters.CreateSnapshotParameter{}
 	createSnapshotParameter.SetVolumeName(parameter.GetSourceVolumeName())
-	createSnapshotParameter.SetSnapshotName(parameter.GetSourceSnapshotName())
+	createSnapshotParameter.SetSnapshotName(parameter.GetVolumeName())
 	_, err = CreateSnapshot(createSnapshotParameter, requestId)
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolumeParamete
 	// delete tmp snapshot
 	deleteSnapshotParameter := &parameters.DeleteSnapshotParameter{}
 	deleteSnapshotParameter.SetVolumeName(parameter.GetSourceVolumeName())
-	deleteSnapshotParameter.SetSnapshotName(parameter.GetSourceSnapshotName())
+	deleteSnapshotParameter.SetSnapshotName(parameter.GetVolumeName())
 	_ = DeleteSnapshot(deleteSnapshotParameter, requestId)
 
 	data := &responses.CreateSubsysResponse{}
