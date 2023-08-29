@@ -1,4 +1,4 @@
-package requests
+package horizontal
 
 // File       : config.go
 // Path       : client
@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -84,7 +83,7 @@ func getServerInfo(endpoint string) (version string, qps int, err error) {
 		return version, qps, err
 	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return version, qps, err
 	}
