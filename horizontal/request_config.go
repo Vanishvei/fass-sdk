@@ -16,9 +16,9 @@ import (
 	"strings"
 )
 
-var allowVersionSet = map[string]string{"3.1.0": "v3"}
+var allowVersionSet = map[string]string{"v3.1.0": "v3"}
 
-type config struct {
+type Config struct {
 	Port            *int      `json:"port"`
 	ConnectTimeout  *int      `json:"connectTimeout"`
 	ReadTimeout     *int      `json:"readTimeout"`
@@ -30,55 +30,55 @@ type config struct {
 	ApiQPS          *int      `json:"api_qps"`
 }
 
-func (c *config) SwitchEndpoint() {
-	for _, endpoint := range *globalConfig.EndpointList {
+func (c *Config) SwitchEndpoint() {
+	for _, endpoint := range *GlobalConfig.EndpointList {
 		version, qps, err := getServerInfo(endpoint)
 		if err != nil {
 			continue
 		}
 
-		globalConfig.ApiQPS = &qps
-		globalConfig.ApiVersion = &version
-		globalConfig.CurrentEndpoint = &endpoint
+		GlobalConfig.ApiQPS = &qps
+		GlobalConfig.ApiVersion = &version
+		GlobalConfig.CurrentEndpoint = &endpoint
 		return
 	}
 
 	panic("Switch endpoint failed due to no normal nodes are available")
 }
 
-var globalConfig config
+var GlobalConfig Config
 
 func InitConfig(endpointList *[]string, port, readTimeout, connectTimeout, backoff, retryCount *int) {
-	globalConfig.EndpointList = endpointList
-	globalConfig.Port = port
-	globalConfig.Backoff = backoff
-	globalConfig.RetryCount = retryCount
-	globalConfig.ReadTimeout = readTimeout
-	globalConfig.ConnectTimeout = connectTimeout
+	GlobalConfig.EndpointList = endpointList
+	GlobalConfig.Port = port
+	GlobalConfig.Backoff = backoff
+	GlobalConfig.RetryCount = retryCount
+	GlobalConfig.ReadTimeout = readTimeout
+	GlobalConfig.ConnectTimeout = connectTimeout
 
 	initServerInfo()
 }
 
 func initServerInfo() {
-	for _, endpoint := range *globalConfig.EndpointList {
+	for _, endpoint := range *GlobalConfig.EndpointList {
 		version, qps, err := getServerInfo(endpoint)
 		if err != nil {
 			continue
 		}
 
-		globalConfig.ApiQPS = &qps
-		globalConfig.ApiVersion = &version
-		globalConfig.CurrentEndpoint = &endpoint
+		GlobalConfig.ApiQPS = &qps
+		GlobalConfig.ApiVersion = &version
+		GlobalConfig.CurrentEndpoint = &endpoint
 		return
 	}
 
-	if globalConfig.CurrentEndpoint == nil {
+	if GlobalConfig.CurrentEndpoint == nil {
 		panic("Init server info failed")
 	}
 }
 
 func getServerInfo(endpoint string) (version string, qps int, err error) {
-	response, err := http.Get(fmt.Sprintf("http://%s:%d/api/info", endpoint, *globalConfig.Port))
+	response, err := http.Get(fmt.Sprintf("http://%s:%d/api/info", endpoint, *GlobalConfig.Port))
 	if err != nil {
 		return version, qps, err
 	}
