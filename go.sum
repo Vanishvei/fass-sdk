@@ -18,6 +18,8 @@ github.com/Vanishvei/fass-sdk-parameters v1.0.6 h1:EBprGvsdVzWuQkCdG1g8gJgSlaoBy
 github.com/Vanishvei/fass-sdk-parameters v1.0.6/go.mod h1:LbSC+9N9Fs84eWsVu1d+7GEd6xYHppBHJTUPhSaYVaY=
 github.com/Vanishvei/fass-sdk-parameters v1.0.7 h1:IplBmJNYHzFFh0jKUUaxlwzPxXMc8rHxQdDQ1ldRjaM=
 github.com/Vanishvei/fass-sdk-parameters v1.0.7/go.mod h1:LbSC+9N9Fs84eWsVu1d+7GEd6xYHppBHJTUPhSaYVaY=
+github.com/Vanishvei/fass-sdk-parameters v1.0.8 h1:I4A61fdxwtCfFI9pXXF1XxO+tal4Dx0DY3iDVJcAigc=
+github.com/Vanishvei/fass-sdk-parameters v1.0.8/go.mod h1:LbSC+9N9Fs84eWsVu1d+7GEd6xYHppBHJTUPhSaYVaY=
 github.com/Vanishvei/fass-sdk-responses v0.0.8 h1:2ZdQuyrljvML+pmHt4994FKYwvDjOaTljQCiCWiAAVE=
 github.com/Vanishvei/fass-sdk-responses v0.0.8/go.mod h1:K49cEm5toh1Wklcb6Hv/8vz2qRmFEEdt/Q1UGAo4oTs=
 github.com/Vanishvei/fass-sdk-responses v0.0.9 h1:fZsBoL6haewOPn4UHS2W+k/h6NgDHaFIc4UM+yQmW2I=
@@ -38,6 +40,8 @@ github.com/Vanishvei/fass-sdk-responses v1.0.6 h1:SY9LZMgqnVCwwWYRrs6j6S7IjkLvcl
 github.com/Vanishvei/fass-sdk-responses v1.0.6/go.mod h1:K49cEm5toh1Wklcb6Hv/8vz2qRmFEEdt/Q1UGAo4oTs=
 github.com/Vanishvei/fass-sdk-responses v1.0.7 h1:aDhuWKKK2Ozi3gUp23cBaGhvfj17ke3zgeoDbCne9/s=
 github.com/Vanishvei/fass-sdk-responses v1.0.7/go.mod h1:K49cEm5toh1Wklcb6Hv/8vz2qRmFEEdt/Q1UGAo4oTs=
+github.com/Vanishvei/fass-sdk-responses v1.0.8 h1:RGvWWD47kNuOG30uJ97aTVYYJSBbIZENzLmZkvYa5E0=
+github.com/Vanishvei/fass-sdk-responses v1.0.8/go.mod h1:K49cEm5toh1Wklcb6Hv/8vz2qRmFEEdt/Q1UGAo4oTs=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
