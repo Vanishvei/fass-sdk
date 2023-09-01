@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -120,13 +119,6 @@ func (s serverInfo) APIVersion(endpoint string) string {
 	_version := strings.Split(s.Version, ".")
 	if len(_version) != versionSectorCount {
 		panic(fmt.Sprintf("Endpoint %s invalid API version %s", endpoint, s.Version))
-	}
-
-	for _, index := range []int{0, 1, 2} {
-		_, err := strconv.Atoi(_version[index])
-		if err != nil {
-			panic(fmt.Sprintf("Endpoint %s invalid API version %s", endpoint, s.Version))
-		}
 	}
 
 	apiVersion, ok := allowVersionSet[s.Version]
