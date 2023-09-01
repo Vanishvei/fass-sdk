@@ -129,7 +129,7 @@ func (s serverInfo) APIVersion(endpoint string) string {
 		}
 	}
 
-	apiVersion, ok := allowVersionSet[s.Version[0:3]]
+	apiVersion, ok := allowVersionSet[s.Version]
 	if !ok {
 		panic(fmt.Sprintf("Unsupported endpoint %s api version %s", endpoint, s.Version))
 	}
