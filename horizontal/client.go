@@ -81,7 +81,7 @@ func DoRequest(request *Request, requestRuntime map[string]interface{}) (respons
 
 	res, err := hookDo(client.Do)(httpRequest)
 	if err != nil {
-		globalConfig.SwitchEndpoint()
+		GlobalConfig.SwitchEndpoint()
 
 		res, err = hookDo(client.Do)(httpRequest)
 		if err != nil {
