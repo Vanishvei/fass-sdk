@@ -14,6 +14,10 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
+func InitConfig(endpointList *[]string, port, readTimeout, connectTimeout, backoff, retryCount *int) {
+	horizontal.InitConfig(endpointList, port, readTimeout, connectTimeout, backoff, retryCount)
+}
+
 type fassClient struct {
 	Port       *int
 	Endpoint   *string
