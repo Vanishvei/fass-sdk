@@ -45,16 +45,17 @@ func (c *Config) SwitchEndpoint() {
 	panic("Switch endpoint failed due to no normal nodes are available")
 }
 
-var GlobalConfig Config
+var GlobalConfig *Config
 
 func InitConfig(endpointList *[]string, port, readTimeout, connectTimeout, backoff, retryCount *int) {
-	GlobalConfig.EndpointList = endpointList
-	GlobalConfig.Port = port
-	GlobalConfig.Backoff = backoff
-	GlobalConfig.RetryCount = retryCount
-	GlobalConfig.ReadTimeout = readTimeout
-	GlobalConfig.ConnectTimeout = connectTimeout
-
+	GlobalConfig = &Config{
+		EndpointList:   endpointList,
+		Port:           port,
+		Backoff:        backoff,
+		RetryCount:     retryCount,
+		ReadTimeout:    readTimeout,
+		ConnectTimeout: connectTimeout,
+	}
 	initServerInfo()
 }
 

@@ -29,7 +29,7 @@ type fassClient struct {
 
 func newClient() (*fassClient, error) {
 	client := new(fassClient)
-	err := client.init(&horizontal.GlobalConfig)
+	err := client.init(horizontal.GlobalConfig)
 	return client, err
 }
 
@@ -85,8 +85,6 @@ func (client *fassClient) doRequest(request *horizontal.Request) (_result *respo
 		globalHeaders,
 		request.Headers,
 	)
-
-	horizontal.GlobalConfig.SwitchEndpoint()
 
 	_resp := &responses.SuzakuResponse{}
 	for _retryTimes := 0; horizontal.BoolValue(horizontal.AllowRetry(_runtime["retry"], horizontal.Int(_retryTimes))); _retryTimes++ {
