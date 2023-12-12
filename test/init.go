@@ -9,7 +9,6 @@ package test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -42,7 +41,7 @@ func init() {
 		panic(fmt.Sprintf("config yml file %s not exists", _configYaml))
 	}
 
-	data, err := ioutil.ReadFile(_configYaml)
+	data, err := os.ReadFile(_configYaml)
 	if err != nil {
 		panic(fmt.Sprintf("Open config yaml failed. due to %s", err))
 	}
