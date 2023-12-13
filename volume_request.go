@@ -14,8 +14,8 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
-func ListVolume(parameter *parameters.ListVolumeParameter, requestId string) (
-	*responses.ListVolumeResponse, error) {
+func ListVolume(parameter *parameters.ListVolume, requestId string) (
+	*responses.ListVolume, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -30,13 +30,13 @@ func ListVolume(parameter *parameters.ListVolumeParameter, requestId string) (
 		return nil, err
 	}
 
-	data := &responses.ListVolumeResponse{}
+	data := &responses.ListVolume{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func RetrieveVolume(parameter *parameters.RetrieveVolumeParameter, requestId string) (
-	*responses.RetrieveVolumeResponse, error) {
+func RetrieveVolume(parameter *parameters.RetrieveVolume, requestId string) (
+	*responses.RetrieveVolume, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -50,12 +50,12 @@ func RetrieveVolume(parameter *parameters.RetrieveVolumeParameter, requestId str
 		return nil, err
 	}
 
-	data := &responses.RetrieveVolumeResponse{}
+	data := &responses.RetrieveVolume{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func DeleteVolume(parameter *parameters.DeleteVolumeParameter, requestId string) error {
+func DeleteVolume(parameter *parameters.DeleteVolume, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func DeleteVolume(parameter *parameters.DeleteVolumeParameter, requestId string)
 	return err
 }
 
-func ExpandVolume(parameter *parameters.ExpandVolumeParameter, requestId string) error {
+func ExpandVolume(parameter *parameters.ExpandVolume, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -85,8 +85,8 @@ func ExpandVolume(parameter *parameters.ExpandVolumeParameter, requestId string)
 	return err
 }
 
-func FlattenVolume(parameter *parameters.FlattenVolumeParameter, requestId string) (
-	*responses.FlattenVolumeResponse, error) {
+func FlattenVolume(parameter *parameters.FlattenVolume, requestId string) (
+	*responses.FlattenVolume, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -102,12 +102,12 @@ func FlattenVolume(parameter *parameters.FlattenVolumeParameter, requestId strin
 		return nil, err
 	}
 
-	data := &responses.FlattenVolumeResponse{}
+	data := &responses.FlattenVolume{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func SetQosOfVolume(parameter *parameters.SetQosOfVolumeParameter, requestId string) error {
+func SetQosOfVolume(parameter *parameters.SetQosOfVolume, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -122,7 +122,7 @@ func SetQosOfVolume(parameter *parameters.SetQosOfVolumeParameter, requestId str
 }
 
 func FlattenVolumeProgress(parameter *parameters.GetFlattenVolumeProgress, requestId string) (
-	*responses.FlattenVolumeProgressResponse, error) {
+	*responses.FlattenVolumeProgress, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -137,12 +137,12 @@ func FlattenVolumeProgress(parameter *parameters.GetFlattenVolumeProgress, reque
 		return nil, err
 	}
 
-	data := &responses.FlattenVolumeProgressResponse{}
+	data := &responses.FlattenVolumeProgress{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func StopFlattenVolume(parameter *parameters.StopFlattenVolumeParameter, requestId string) error {
+func StopFlattenVolume(parameter *parameters.StopFlattenVolume, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err

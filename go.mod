@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	github.com/Vanishvei/fass-sdk-parameters v1.0.9 // indirect
+	github.com/Vanishvei/fass-sdk-parameters v1.1.1 // indirect
 	github.com/Vanishvei/fass-sdk-responses v1.0.9 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 )

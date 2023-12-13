@@ -31,16 +31,18 @@ var (
 	snapshotName      = "s1"
 	accountName       = "account_1"
 	password          = "admin@1234"
-	groupName         = "group_1"
-	hostName          = "client_1"
-	qualifierList     = []string{
-		"nqn.2019-03.suzaku:s1000",
-		"iqn.2019-03.cn.suzaku:s1000",
+	hostGroupName     = "group_1"
+
+	addIQN = map[string]string{
+		"iqn.1994-05.com.redhat:7f11687c3ce1": "client1",
+	}
+	addNQN = map[string]string{
+		"nqn.2014-08.org.nvmexpress:uuid:c013a7f3-e873-46a3-87d8-d5aeccd27732": "client1",
 	}
 )
 
 func setup() {
-	createAccountParameter := parameters.CreateAccountParameter{}
+	createAccountParameter := parameters.CreateAccount{}
 	createAccountParameter.SetAccountName(accountName)
 	createAccountParameter.SetPassword(password)
 
@@ -50,27 +52,27 @@ func setup() {
 		panic(fmt.Sprintf("create account %s failed\n", accountName))
 	}
 
-	createGroupParameter := parameters.AddQualifierToGroupParameter{}
-	createGroupParameter.SetQualifierList(qualifierList)
-	createGroupParameter.SetGroupName(groupName)
-	createGroupParameter.SetHostName(hostName)
+	createGroupParameter := parameters.AddHostToHostGroup{}
+	createGroupParameter.SetHostGroupName(hostGroupName)
+	createGroupParameter.SetIQN(addIQN)
+	createGroupParameter.SetNQN(addNQN)
 
-	_, err = fassSDK.AddQualifierToGroup(&createGroupParameter, uuid.New().String())
+	_, err = fassSDK.AddHostToHostGroup(&createGroupParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
-		panic(fmt.Sprintf("add qualifier to group %s failed\n", groupName))
+		panic(fmt.Sprintf("add client to host group %s failed\n", hostGroupName))
 	}
 }
 
 func teardown() {
-	deleteGroupParameter := parameters.DeleteGroupParameter{}
-	deleteGroupParameter.SetGroupName(groupName)
-	err := fassSDK.DeleteGroup(&deleteGroupParameter, uuid.New().String())
+	deleteGroupParameter := parameters.DeleteHostGroup{}
+	deleteGroupParameter.SetHostGroupName(hostGroupName)
+	err := fassSDK.DeleteHostGroup(&deleteGroupParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fmt.Printf("delete host group %s failed\n", groupName)
+		fmt.Printf("delete host group %s failed\n", hostGroupName)
 	}
 
-	deleteAccountParameter := parameters.DeleteAccountParameter{}
+	deleteAccountParameter := parameters.DeleteAccount{}
 	deleteAccountParameter.SetAccountName(accountName)
 
 	err = fassSDK.DeleteAccount(&deleteAccountParameter, uuid.New().String())
@@ -80,7 +82,7 @@ func teardown() {
 }
 
 func TestCreateSubsys(t *testing.T) {
-	parameter := parameters.CreateSubsysParameter{}
+	parameter := parameters.CreateSubsys{}
 	parameter.SetName(subsysName)
 	parameter.SetPoolName(poolName)
 	parameter.SetVolumeName(volumeName)
@@ -99,7 +101,7 @@ func TestCreateSubsys(t *testing.T) {
 }
 
 func TestRetrieveSubsys(t *testing.T) {
-	parameter := parameters.RetrieveSubsysParameter{}
+	parameter := parameters.RetrieveSubsys{}
 	parameter.SetSubsysName(subsysName)
 
 	_, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
@@ -110,7 +112,7 @@ func TestRetrieveSubsys(t *testing.T) {
 }
 
 func TestRetrieveSubsysNotExists(t *testing.T) {
-	parameter := parameters.RetrieveSubsysParameter{}
+	parameter := parameters.RetrieveSubsys{}
 	parameter.SetSubsysName(invalidSubsysName)
 
 	_, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
@@ -135,7 +137,7 @@ func TestRetrieveSubsysNotExists(t *testing.T) {
 func TestCreateSubsysFromVolume(t *testing.T) {
 	requestId := uuid.New().String()
 
-	parameter := parameters.CreateSubsysFromVolumeParameter{}
+	parameter := parameters.CreateSubsysFromVolume{}
 	parameter.SetName(subsysName1)
 	parameter.SetPoolName(poolName)
 	parameter.SetSrcVolumeName(volumeName)
@@ -158,7 +160,7 @@ func TestCreateSubsysFromVolume(t *testing.T) {
 
 func TestCreateSubsysFromSnapshot(t *testing.T) {
 	requestId := uuid.New().String()
-	createSnapshotParameter := parameters.CreateSnapshotParameter{}
+	createSnapshotParameter := parameters.CreateSnapshot{}
 	createSnapshotParameter.SetVolumeName(volumeName)
 	createSnapshotParameter.SetSnapshotName(snapshotName)
 	_, err := fassSDK.CreateSnapshot(&createSnapshotParameter, requestId)
@@ -168,7 +170,7 @@ func TestCreateSubsysFromSnapshot(t *testing.T) {
 		return
 	}
 
-	parameter := parameters.CreateSubsysFromSnapshotParameter{}
+	parameter := parameters.CreateSubsysFromSnapshot{}
 	parameter.SetName(subsysName2)
 	parameter.SetPoolName(poolName)
 	parameter.SetSrcVolumeName(volumeName)
@@ -183,7 +185,7 @@ func TestCreateSubsysFromSnapshot(t *testing.T) {
 		return
 	}
 
-	deleteSnapshotParameter := parameters.DeleteSnapshotParameter{}
+	deleteSnapshotParameter := parameters.DeleteSnapshot{}
 	deleteSnapshotParameter.SetVolumeName(volumeName)
 	deleteSnapshotParameter.SetSnapshotName(snapshotName)
 
@@ -201,7 +203,7 @@ func TestCreateSubsysFromSnapshot(t *testing.T) {
 }
 
 func TestListSubsys(t *testing.T) {
-	parameter := parameters.ListSubsysParameter{}
+	parameter := parameters.ListSubsys{}
 
 	_, err := fassSDK.ListSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
@@ -211,7 +213,7 @@ func TestListSubsys(t *testing.T) {
 }
 
 func TestExportSubsys(t *testing.T) {
-	parameter := parameters.ExportSubsysParameter{}
+	parameter := parameters.ExportSubsys{}
 	parameter.SetSubsysName(subsysName)
 	parameter.ExportISCSI()
 
@@ -223,7 +225,7 @@ func TestExportSubsys(t *testing.T) {
 }
 
 func TestUnexportSubsys(t *testing.T) {
-	parameter := parameters.UnexportSubsysParameter{}
+	parameter := parameters.UnexportSubsys{}
 	parameter.SetSubsysName(subsysName)
 	parameter.UnexportISCSI()
 
@@ -235,35 +237,35 @@ func TestUnexportSubsys(t *testing.T) {
 }
 
 func TestSetSubsysAuth(t *testing.T) {
-	parameter := parameters.SetSubsysAuthParameter{}
+	parameter := parameters.SubsysBindHostGroup{}
 	parameter.SetSubsysName(subsysName)
-	parameter.SetGroupName(groupName)
+	parameter.SetHostGroupName(hostGroupName)
 
-	err := fassSDK.SetSubsysAuth(&parameter, uuid.New().String())
+	err := fassSDK.SubsysBindHostGroup(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
 }
 
-func TestRetrieveSubsysAuth(t *testing.T) {
-	parameter := parameters.RetrieveSubsysAuthParameter{}
+func TestRetrieveSubsysHostGroup(t *testing.T) {
+	parameter := parameters.RetrieveSubsysHostGroup{}
 	parameter.SetSubsysName(subsysName)
 
-	resp, err := fassSDK.RetrieveSubsysAuth(&parameter, uuid.New().String())
+	resp, err := fassSDK.RetrieveSubsysHostGroup(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
 
-	if !reflect.DeepEqual(resp.Auth, groupName) {
-		fmt.Printf("auth result %s is not equal to %s\n", resp.Auth, groupName)
+	if !reflect.DeepEqual(resp.HostGroup, hostGroupName) {
+		fmt.Printf("auth result %s is not equal to %s\n", resp.HostGroup, hostGroupName)
 		t.FailNow()
 	}
 }
 
 func TestSetSubsysChap(t *testing.T) {
-	parameter := parameters.SetSubsysChapParameter{}
+	parameter := parameters.SetSubsysChap{}
 	parameter.SetSubsysName(subsysName)
 	parameter.SetAccountName(accountName)
 
@@ -275,7 +277,7 @@ func TestSetSubsysChap(t *testing.T) {
 }
 
 func TestRetrieveSubsysChap(t *testing.T) {
-	parameter := parameters.RetrieveSubsysChapParameter{}
+	parameter := parameters.RetrieveSubsysChap{}
 	parameter.SetSubsysName(subsysName)
 
 	resp, err := fassSDK.RetrieveSubsysChap(&parameter, uuid.New().String())
@@ -290,11 +292,11 @@ func TestRetrieveSubsysChap(t *testing.T) {
 	}
 }
 
-func TestRemoveSubsysAuth(t *testing.T) {
-	parameter := parameters.RemoveSubsysAuthParameter{}
+func TestSubsysUnbindHostGroup(t *testing.T) {
+	parameter := parameters.SubsysUnbindHostGroup{}
 	parameter.SetSubsysName(subsysName)
 
-	err := fassSDK.RemoveSubsysAuth(&parameter, uuid.New().String())
+	err := fassSDK.SubsysUnbindHostGroup(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
@@ -302,7 +304,7 @@ func TestRemoveSubsysAuth(t *testing.T) {
 }
 
 func TestRemoveSubsysChap(t *testing.T) {
-	parameter := parameters.RemoveSubsysChapParameter{}
+	parameter := parameters.RemoveSubsysChap{}
 	parameter.SetSubsysName(subsysName)
 
 	err := fassSDK.RemoveSubsysChap(&parameter, uuid.New().String())
@@ -321,7 +323,7 @@ func TestDeleteSubsys(t *testing.T) {
 }
 
 func deleteSubsys(subsysName_ string) error {
-	parameter := parameters.DeleteSubsysParameter{}
+	parameter := parameters.DeleteSubsys{}
 	parameter.SetSubsysName(subsysName_)
 	parameter.DeleteVolume()
 	parameter.ForceDelete()

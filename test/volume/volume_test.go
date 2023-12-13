@@ -37,7 +37,7 @@ var (
 
 func setup() {
 	fmt.Printf("create source subsys %s\n", srcSubsysName)
-	createSubsysParameter := parameters.CreateSubsysParameter{}
+	createSubsysParameter := parameters.CreateSubsys{}
 	createSubsysParameter.SetPoolName(poolName)
 	createSubsysParameter.SetCapacityGB(10)
 	createSubsysParameter.SetSectorSize4096()
@@ -54,7 +54,7 @@ func setup() {
 	time.Sleep(3 * time.Second)
 
 	fmt.Printf("create source snapshot %s\n", srcSnapshotName)
-	createSnapshotParameter := parameters.CreateSnapshotParameter{}
+	createSnapshotParameter := parameters.CreateSnapshot{}
 	createSnapshotParameter.SetVolumeName(srcVolumeName)
 	createSnapshotParameter.SetSnapshotName(srcSnapshotName)
 
@@ -73,7 +73,7 @@ func setup() {
 
 func teardown() {
 	fmt.Printf("delete source snapshot %s\n", srcSnapshotName)
-	deleteSnapshotParameter := parameters.DeleteSnapshotParameter{}
+	deleteSnapshotParameter := parameters.DeleteSnapshot{}
 	deleteSnapshotParameter.SetVolumeName(srcVolumeName)
 	deleteSnapshotParameter.SetSnapshotName(srcSnapshotName)
 
@@ -85,7 +85,7 @@ func teardown() {
 	}
 
 	fmt.Printf("delete source subsys %s\n", srcSubsysName)
-	deleteSubsysParameter := parameters.DeleteSubsysParameter{}
+	deleteSubsysParameter := parameters.DeleteSubsys{}
 	deleteSubsysParameter.SetSubsysName(srcSubsysName)
 	deleteSubsysParameter.ForceDelete()
 	deleteSubsysParameter.DeleteVolume()
@@ -106,7 +106,7 @@ func teardown() {
 }
 
 func createVolumeFromSnapshot(subsysName, volumeName string) error {
-	createSubsysParameter := parameters.CreateSubsysFromSnapshotParameter{}
+	createSubsysParameter := parameters.CreateSubsysFromSnapshot{}
 	createSubsysParameter.SetName(subsysName)
 	createSubsysParameter.SetPoolName(poolName)
 	createSubsysParameter.SetVolumeName(volumeName)
@@ -119,7 +119,7 @@ func createVolumeFromSnapshot(subsysName, volumeName string) error {
 		return err
 	}
 
-	deleteSubsysParameter := parameters.DeleteSubsysParameter{}
+	deleteSubsysParameter := parameters.DeleteSubsys{}
 	deleteSubsysParameter.SetSubsysName(subsysName)
 
 	err = fassSDK.DeleteSubsys(&deleteSubsysParameter, uuid.New().String())
@@ -139,7 +139,7 @@ func TestCreateVolume(t *testing.T) {
 }
 
 func TestListVolume(t *testing.T) {
-	parameter := parameters.ListVolumeParameter{}
+	parameter := parameters.ListVolume{}
 
 	_, err := fassSDK.ListVolume(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
@@ -149,7 +149,7 @@ func TestListVolume(t *testing.T) {
 }
 
 func TestRetrieveVolume(t *testing.T) {
-	parameter := parameters.RetrieveVolumeParameter{}
+	parameter := parameters.RetrieveVolume{}
 	parameter.SetVolumeName(newVolumeName1)
 
 	_, err := fassSDK.RetrieveVolume(&parameter, uuid.New().String())
@@ -160,7 +160,7 @@ func TestRetrieveVolume(t *testing.T) {
 }
 
 func TestRetrieveVolumeNotExists(t *testing.T) {
-	parameter := parameters.RetrieveVolumeParameter{}
+	parameter := parameters.RetrieveVolume{}
 	parameter.SetVolumeName(invalidVolumeName)
 
 	_, err := fassSDK.RetrieveVolume(&parameter, uuid.New().String())
@@ -183,7 +183,7 @@ func TestRetrieveVolumeNotExists(t *testing.T) {
 }
 
 func TestExpandVolume(t *testing.T) {
-	parameter := parameters.ExpandVolumeParameter{}
+	parameter := parameters.ExpandVolume{}
 	parameter.SetVolumeName(newVolumeName1)
 	parameter.SetNewCapacityGB(20)
 
@@ -195,7 +195,7 @@ func TestExpandVolume(t *testing.T) {
 }
 
 func TestSetQosOfVolume(t *testing.T) {
-	parameter := parameters.SetQosOfVolumeParameter{}
+	parameter := parameters.SetQosOfVolume{}
 	parameter.SetVolumeName(newVolumeName1)
 	parameter.SetBpsMB(100)
 	parameter.SetIops(1000)
@@ -207,8 +207,8 @@ func TestSetQosOfVolume(t *testing.T) {
 	}
 }
 
-func flattenVolume(volumeName string) (*responses.FlattenVolumeResponse, error) {
-	parameter := parameters.FlattenVolumeParameter{}
+func flattenVolume(volumeName string) (*responses.FlattenVolume, error) {
+	parameter := parameters.FlattenVolume{}
 	parameter.SetVolumeName(volumeName)
 
 	data, err := fassSDK.FlattenVolume(&parameter, uuid.New().String())
@@ -253,7 +253,7 @@ func TestStopFlattenVolume(t *testing.T) {
 		t.Fail()
 	}
 
-	parameter := parameters.StopFlattenVolumeParameter{}
+	parameter := parameters.StopFlattenVolume{}
 	parameter.SetTaskId(data.TaskId)
 
 	err = fassSDK.StopFlattenVolume(&parameter, uuid.New().String())
@@ -264,7 +264,7 @@ func TestStopFlattenVolume(t *testing.T) {
 }
 
 func deleteVolume(volumeName string, retry int) error {
-	parameter := parameters.DeleteVolumeParameter{}
+	parameter := parameters.DeleteVolume{}
 	parameter.SetVolumeName(volumeName)
 	parameter.ForceDelete()
 

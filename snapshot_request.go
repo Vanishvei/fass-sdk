@@ -14,8 +14,8 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
-func RetrieveSnapshot(parameter *parameters.RetrieveSnapshotParameter, requestId string) (
-	*responses.RetrieveSnapshotResponse, error) {
+func RetrieveSnapshot(parameter *parameters.RetrieveSnapshot, requestId string) (
+	*responses.RetrieveSnapshot, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -29,13 +29,13 @@ func RetrieveSnapshot(parameter *parameters.RetrieveSnapshotParameter, requestId
 		return nil, err
 	}
 
-	data := &responses.RetrieveSnapshotResponse{}
+	data := &responses.RetrieveSnapshot{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func ListSnapshot(parameter *parameters.ListSnapshotParameter, requestId string) (
-	*responses.ListSnapshotResponse, error) {
+func ListSnapshot(parameter *parameters.ListSnapshot, requestId string) (
+	*responses.ListSnapshot, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -49,13 +49,13 @@ func ListSnapshot(parameter *parameters.ListSnapshotParameter, requestId string)
 		return nil, err
 	}
 
-	data := &responses.ListSnapshotResponse{}
+	data := &responses.ListSnapshot{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func CreateSnapshot(parameter *parameters.CreateSnapshotParameter, requestId string) (
-	*responses.CreateSnapshotResponse, error) {
+func CreateSnapshot(parameter *parameters.CreateSnapshot, requestId string) (
+	*responses.CreateSnapshot, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -71,12 +71,12 @@ func CreateSnapshot(parameter *parameters.CreateSnapshotParameter, requestId str
 		return nil, err
 	}
 
-	data := &responses.CreateSnapshotResponse{}
+	data := &responses.CreateSnapshot{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func RevertSnapshot(parameter *parameters.RevertSnapshotParameter, requestId string) error {
+func RevertSnapshot(parameter *parameters.RevertSnapshot, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -91,7 +91,7 @@ func RevertSnapshot(parameter *parameters.RevertSnapshotParameter, requestId str
 	return err
 }
 
-func DeleteSnapshot(parameter *parameters.DeleteSnapshotParameter, requestId string) error {
+func DeleteSnapshot(parameter *parameters.DeleteSnapshot, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err

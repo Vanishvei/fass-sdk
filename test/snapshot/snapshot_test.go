@@ -31,7 +31,7 @@ var (
 
 func setup() {
 	fmt.Printf("create subsys %s\n", subsysName)
-	createSubsysParameter := parameters.CreateSubsysParameter{}
+	createSubsysParameter := parameters.CreateSubsys{}
 	createSubsysParameter.SetPoolName(poolName)
 	createSubsysParameter.SetCapacityGB(10)
 	createSubsysParameter.SetSectorSize4096()
@@ -49,7 +49,7 @@ func setup() {
 
 func teardown() {
 	fmt.Printf("delete subsys %s\n", subsysName)
-	deleteSubsysParameter := parameters.DeleteSubsysParameter{}
+	deleteSubsysParameter := parameters.DeleteSubsys{}
 	deleteSubsysParameter.SetSubsysName(subsysName)
 	deleteSubsysParameter.ForceDelete()
 	deleteSubsysParameter.DeleteVolume()
@@ -62,7 +62,7 @@ func teardown() {
 }
 
 func TestCreateSnapshot(t *testing.T) {
-	parameter := parameters.CreateSnapshotParameter{}
+	parameter := parameters.CreateSnapshot{}
 	parameter.SetVolumeName(volumeName)
 	parameter.SetSnapshotName(snapshotName)
 	_, err := fassSDK.CreateSnapshot(&parameter, uuid.New().String())
@@ -73,7 +73,7 @@ func TestCreateSnapshot(t *testing.T) {
 }
 
 func TestRetrieveSnapshot(t *testing.T) {
-	parameter := parameters.RetrieveSnapshotParameter{}
+	parameter := parameters.RetrieveSnapshot{}
 	parameter.SetVolumeName(volumeName)
 	parameter.SetSnapshotName(snapshotName)
 	_, err := fassSDK.RetrieveSnapshot(&parameter, uuid.New().String())
@@ -84,7 +84,7 @@ func TestRetrieveSnapshot(t *testing.T) {
 }
 
 func TestRetrieveSnapshotNotExists(t *testing.T) {
-	parameter := parameters.RetrieveSnapshotParameter{}
+	parameter := parameters.RetrieveSnapshot{}
 	parameter.SetVolumeName(volumeName)
 	parameter.SetSnapshotName(invalidSnapshotName)
 	_, err := fassSDK.RetrieveSnapshot(&parameter, uuid.New().String())
@@ -107,7 +107,7 @@ func TestRetrieveSnapshotNotExists(t *testing.T) {
 }
 
 func TestListSnapshot(t *testing.T) {
-	parameter := parameters.ListSnapshotParameter{}
+	parameter := parameters.ListSnapshot{}
 	parameter.SetVolumeName(volumeName)
 	_, err := fassSDK.ListSnapshot(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
@@ -117,7 +117,7 @@ func TestListSnapshot(t *testing.T) {
 }
 
 func TestRevertSnapshot(t *testing.T) {
-	parameter := parameters.RevertSnapshotParameter{}
+	parameter := parameters.RevertSnapshot{}
 	parameter.SetVolumeName(volumeName)
 	parameter.SetSnapshotName(snapshotName)
 	err := fassSDK.RevertSnapshot(&parameter, uuid.New().String())
@@ -128,7 +128,7 @@ func TestRevertSnapshot(t *testing.T) {
 }
 
 func TestDeleteSnapshot(t *testing.T) {
-	parameter := parameters.DeleteSnapshotParameter{}
+	parameter := parameters.DeleteSnapshot{}
 	parameter.SetVolumeName(volumeName)
 	parameter.SetSnapshotName(snapshotName)
 	err := fassSDK.DeleteSnapshot(&parameter, uuid.New().String())

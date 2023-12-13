@@ -14,8 +14,8 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
-func ListAccount(parameter *parameters.ListAccountParameter, requestId string) (
-	*responses.ListAccountResponse, error) {
+func ListAccount(parameter *parameters.ListAccount, requestId string) (
+	*responses.ListAccount, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -30,13 +30,13 @@ func ListAccount(parameter *parameters.ListAccountParameter, requestId string) (
 		return nil, err
 	}
 
-	data := &responses.ListAccountResponse{}
+	data := &responses.ListAccount{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func CreateAccount(parameter *parameters.CreateAccountParameter, requestId string) (
-	*responses.CreateAccountResponse, error) {
+func CreateAccount(parameter *parameters.CreateAccount, requestId string) (
+	*responses.CreateAccount, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -52,13 +52,13 @@ func CreateAccount(parameter *parameters.CreateAccountParameter, requestId strin
 		return nil, err
 	}
 
-	data := &responses.CreateAccountResponse{}
+	data := &responses.CreateAccount{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func RetrieveAccount(parameters *parameters.RetrieveAccountParameter, requestId string) (
-	*responses.RetrieveAccountResponse, error) {
+func RetrieveAccount(parameters *parameters.RetrieveAccount, requestId string) (
+	*responses.RetrieveAccount, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -72,12 +72,12 @@ func RetrieveAccount(parameters *parameters.RetrieveAccountParameter, requestId 
 		return nil, err
 	}
 
-	data := &responses.RetrieveAccountResponse{}
+	data := &responses.RetrieveAccount{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func DeleteAccount(parameters *parameters.DeleteAccountParameter, requestId string) error {
+func DeleteAccount(parameters *parameters.DeleteAccount, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -88,102 +88,4 @@ func DeleteAccount(parameters *parameters.DeleteAccountParameter, requestId stri
 
 	_, err = _client.callApi(_request)
 	return err
-}
-
-func ListGroup(parameters *parameters.ListAccountParameter, requestId string) (
-	*responses.ListGroupResponse, error) {
-	_client, err := newClient()
-	if err != nil {
-		return nil, err
-	}
-
-	_request := horizontal.NewRequest(requestId)
-	_request.SetPath("acl/group")
-	_request.SetQuery(parameters.GetQuery())
-
-	resp, err := _client.callApi(_request)
-	if err != nil {
-		return nil, err
-	}
-
-	data := &responses.ListGroupResponse{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
-}
-
-func RetrieveGroup(parameters *parameters.RetrieveGroupParameter, requestId string) (
-	*responses.RetrieveGroupResponse, error) {
-	_client, err := newClient()
-	if err != nil {
-		return nil, err
-	}
-
-	_request := horizontal.NewRequest(requestId)
-	_request.SetPath(parameters.GetPath())
-
-	resp, err := _client.callApi(_request)
-	if err != nil {
-		return nil, err
-	}
-
-	data := &responses.RetrieveGroupResponse{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
-}
-
-func DeleteGroup(parameters *parameters.DeleteGroupParameter, requestId string) error {
-	_client, err := newClient()
-	if err != nil {
-		return err
-	}
-
-	_request := horizontal.NewRequest(requestId)
-	_request.SetPath(parameters.GetPath())
-	_request.SetMethodDELETE()
-
-	_, err = _client.callApi(_request)
-	return err
-}
-
-func AddQualifierToGroup(parameter *parameters.AddQualifierToGroupParameter, requestId string) (
-	*responses.AddQualifierToGroupResponse, error) {
-	_client, err := newClient()
-	if err != nil {
-		return nil, err
-	}
-	_request := horizontal.NewRequest(requestId)
-	_request.SetPath(parameter.GetPath())
-	_request.SetBody(parameter)
-	_request.SetMethodPUT()
-
-	resp, err := _client.callApi(_request)
-	if err != nil {
-		return nil, err
-	}
-
-	data := &responses.AddQualifierToGroupResponse{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
-}
-
-func RemoveQualifierFromGroup(parameter *parameters.RemoveQualifierFromGroupParameter, requestId string) (
-	*responses.RemoveQualifierFromGroupResponse, error) {
-	_client, err := newClient()
-	if err != nil {
-		return nil, err
-	}
-	_request := horizontal.NewRequest(requestId)
-	_request.SetPath(parameter.GetPath())
-	_request.SetMethodPUT()
-	_request.SetBody(parameter)
-
-	resp, err := _client.callApi(_request)
-	if err != nil {
-		return nil, err
-	}
-
-	data := &responses.RemoveQualifierFromGroupResponse{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
-
 }

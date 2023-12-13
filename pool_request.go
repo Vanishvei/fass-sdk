@@ -14,8 +14,8 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
-func RetrievePool(parameter *parameters.RetrievePoolParameter, requestId string) (
-	*responses.RetrievePoolResponse, error) {
+func RetrievePool(parameter *parameters.RetrievePool, requestId string) (
+	*responses.RetrievePool, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func RetrievePool(parameter *parameters.RetrievePoolParameter, requestId string)
 		return nil, err
 	}
 
-	data := &responses.RetrievePoolResponse{}
+	data := &responses.RetrievePool{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }

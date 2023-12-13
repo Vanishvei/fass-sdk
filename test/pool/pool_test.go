@@ -20,11 +20,11 @@ import (
 	_ "github.com/Vanishvei/fass-sdk/test"
 )
 
-var poolName = "pool3"
+var poolName = "fast_pool"
 var invalidPoolName = "pool9999"
 
 func TestRetrievePool(t *testing.T) {
-	parameter := parameters.RetrievePoolParameter{}
+	parameter := parameters.RetrievePool{}
 	parameter.SetPoolName(poolName)
 	_, err := fassSDK.RetrievePool(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
@@ -34,7 +34,7 @@ func TestRetrievePool(t *testing.T) {
 }
 
 func TestRetrievePoolNotExists(t *testing.T) {
-	parameter := parameters.RetrievePoolParameter{}
+	parameter := parameters.RetrievePool{}
 	parameter.SetPoolName(invalidPoolName)
 	_, err := fassSDK.RetrievePool(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {

@@ -14,8 +14,8 @@ import (
 	responses "github.com/Vanishvei/fass-sdk-responses"
 )
 
-func CreateSubsys(parameter *parameters.CreateSubsysParameter, requestId string) (
-	*responses.CreateSubsysResponse, error) {
+func CreateSubsys(parameter *parameters.CreateSubsys, requestId string) (
+	*responses.CreateSubsys, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -30,13 +30,13 @@ func CreateSubsys(parameter *parameters.CreateSubsysParameter, requestId string)
 		return nil, err
 	}
 
-	data := &responses.CreateSubsysResponse{}
+	data := &responses.CreateSubsys{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolumeParameter,
-	requestId string) (*responses.CreateSubsysResponse, error) {
+func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolume,
+	requestId string) (*responses.CreateSubsys, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -44,10 +44,10 @@ func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolumeParamete
 
 	// create temp snapshot
 	_request := horizontal.NewRequest(requestId)
-	createSnapshotParameter := &parameters.CreateSnapshotParameter{}
-	createSnapshotParameter.SetVolumeName(parameter.GetSourceVolumeName())
-	createSnapshotParameter.SetSnapshotName(parameter.GetVolumeName())
-	_, err = CreateSnapshot(createSnapshotParameter, requestId)
+	createSnapshot := &parameters.CreateSnapshot{}
+	createSnapshot.SetVolumeName(parameter.GetSourceVolumeName())
+	createSnapshot.SetSnapshotName(parameter.GetVolumeName())
+	_, err = CreateSnapshot(createSnapshot, requestId)
 	if err != nil {
 		return nil, err
 	}
@@ -62,18 +62,18 @@ func CreateSubsysFromVolume(parameter *parameters.CreateSubsysFromVolumeParamete
 	}
 
 	// delete tmp snapshot
-	deleteSnapshotParameter := &parameters.DeleteSnapshotParameter{}
-	deleteSnapshotParameter.SetVolumeName(parameter.GetSourceVolumeName())
-	deleteSnapshotParameter.SetSnapshotName(parameter.GetVolumeName())
-	_ = DeleteSnapshot(deleteSnapshotParameter, requestId)
+	deleteSnapshot := &parameters.DeleteSnapshot{}
+	deleteSnapshot.SetVolumeName(parameter.GetSourceVolumeName())
+	deleteSnapshot.SetSnapshotName(parameter.GetVolumeName())
+	_ = DeleteSnapshot(deleteSnapshot, requestId)
 
-	data := &responses.CreateSubsysResponse{}
+	data := &responses.CreateSubsys{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func CreateSubsysFromSnapshot(parameter *parameters.CreateSubsysFromSnapshotParameter,
-	requestId string) (*responses.CreateSubsysResponse, error) {
+func CreateSubsysFromSnapshot(parameter *parameters.CreateSubsysFromSnapshot,
+	requestId string) (*responses.CreateSubsys, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -88,13 +88,13 @@ func CreateSubsysFromSnapshot(parameter *parameters.CreateSubsysFromSnapshotPara
 		return nil, err
 	}
 
-	data := &responses.CreateSubsysResponse{}
+	data := &responses.CreateSubsys{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func ListSubsys(parameter *parameters.ListSubsysParameter, requestId string) (
-	*responses.ListSubsysResponse, error) {
+func ListSubsys(parameter *parameters.ListSubsys, requestId string) (
+	*responses.ListSubsys, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -109,13 +109,13 @@ func ListSubsys(parameter *parameters.ListSubsysParameter, requestId string) (
 		return nil, err
 	}
 
-	data := &responses.ListSubsysResponse{}
+	data := &responses.ListSubsys{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func RetrieveSubsys(parameter *parameters.RetrieveSubsysParameter, requestId string) (
-	*responses.RetrieveSubsysResponse, error) {
+func RetrieveSubsys(parameter *parameters.RetrieveSubsys, requestId string) (
+	*responses.RetrieveSubsys, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -129,12 +129,12 @@ func RetrieveSubsys(parameter *parameters.RetrieveSubsysParameter, requestId str
 		return nil, err
 	}
 
-	data := &responses.RetrieveSubsysResponse{}
+	data := &responses.RetrieveSubsys{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func DeleteSubsys(parameter *parameters.DeleteSubsysParameter, requestId string) error {
+func DeleteSubsys(parameter *parameters.DeleteSubsys, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -149,7 +149,7 @@ func DeleteSubsys(parameter *parameters.DeleteSubsysParameter, requestId string)
 	return err
 }
 
-func ExportSubsys(parameter *parameters.ExportSubsysParameter, requestId string) error {
+func ExportSubsys(parameter *parameters.ExportSubsys, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -164,7 +164,7 @@ func ExportSubsys(parameter *parameters.ExportSubsysParameter, requestId string)
 	return err
 }
 
-func UnexportSubsys(parameter *parameters.UnexportSubsysParameter, requestId string) error {
+func UnexportSubsys(parameter *parameters.UnexportSubsys, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -179,8 +179,8 @@ func UnexportSubsys(parameter *parameters.UnexportSubsysParameter, requestId str
 	return err
 }
 
-func RetrieveSubsysAuth(parameter *parameters.RetrieveSubsysAuthParameter,
-	requestId string) (*responses.RetrieveSubsysAuthResponse, error) {
+func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChap,
+	requestId string) (*responses.RetrieveSubsysChap, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -194,12 +194,12 @@ func RetrieveSubsysAuth(parameter *parameters.RetrieveSubsysAuthParameter,
 		return nil, err
 	}
 
-	data := &responses.RetrieveSubsysAuthResponse{}
+	data := &responses.RetrieveSubsysChap{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func SetSubsysAuth(parameter *parameters.SetSubsysAuthParameter, requestId string) error {
+func SetSubsysChap(parameter *parameters.SetSubsysChap, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -214,7 +214,7 @@ func SetSubsysAuth(parameter *parameters.SetSubsysAuthParameter, requestId strin
 	return err
 }
 
-func RemoveSubsysAuth(parameter *parameters.RemoveSubsysAuthParameter, requestId string) error {
+func RemoveSubsysChap(parameter *parameters.RemoveSubsysChap, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -228,8 +228,8 @@ func RemoveSubsysAuth(parameter *parameters.RemoveSubsysAuthParameter, requestId
 	return err
 }
 
-func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChapParameter, requestId string) (
-	*responses.RetrieveSubsysChapResponse, error) {
+func RetrieveSubsysVLAN(parameter *parameters.RetrieveSubsysVLAN, requestId string) (
+	*responses.RetrieveSubsysVLAN, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -243,12 +243,12 @@ func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChapParameter, reque
 		return nil, err
 	}
 
-	data := &responses.RetrieveSubsysChapResponse{}
+	data := &responses.RetrieveSubsysVLAN{}
 	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
 	return data, err
 }
 
-func SetSubsysChap(parameter *parameters.SetSubsysChapParameter, requestId string) error {
+func SubsysAddVLAN(parameter *parameters.SubsysAddVLAN, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -263,7 +263,7 @@ func SetSubsysChap(parameter *parameters.SetSubsysChapParameter, requestId strin
 	return err
 }
 
-func RemoveSubsysChap(parameter *parameters.RemoveSubsysChapParameter, requestId string) error {
+func SubsysRemoveVLAN(parameter *parameters.SubsysRemoveVLAN, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -275,4 +275,52 @@ func RemoveSubsysChap(parameter *parameters.RemoveSubsysChapParameter, requestId
 
 	_, err = _client.callApi(_request)
 	return err
+}
+
+func SubsysBindHostGroup(parameter *parameters.SubsysBindHostGroup, requestId string) error {
+	_client, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	_request := horizontal.NewRequest(requestId)
+	_request.SetPath(parameter.GetPath())
+	_request.SetMethodPUT()
+
+	_, err = _client.callApi(_request)
+	return err
+}
+
+func SubsysUnbindHostGroup(parameter *parameters.SubsysUnbindHostGroup, requestId string) error {
+	_client, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	_request := horizontal.NewRequest(requestId)
+	_request.SetPath(parameter.GetPath())
+	_request.SetMethodPUT()
+
+	_, err = _client.callApi(_request)
+	return err
+}
+
+func RetrieveSubsysHostGroup(parameter *parameters.RetrieveSubsysHostGroup,
+	requestId string) (*responses.RetrieveSubsysHostGroup, error) {
+	_client, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	_request := horizontal.NewRequest(requestId)
+	_request.SetPath(parameter.GetPath())
+
+	resp, err := _client.callApi(_request)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &responses.RetrieveSubsysHostGroup{}
+	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
+	return data, err
 }
