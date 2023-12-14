@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math"
 	"math/rand"
 	"net"
@@ -35,21 +34,21 @@ var basicTypes = []string{
 var validateParams = []string{"require", "pattern", "maxLength", "minLength", "maximum", "minimum", "maxItems", "minItems"}
 
 const (
-	taskNotExist     = "200001"
-	poolNotExist     = "400003"
-	subsysNotExist   = "500002"
-	volumeNotExist   = "600002"
-	snapshotNotExist = "700002"
-	accountNotExist  = "800001"
-	groupNotExist    = "800002"
+	taskNotExist     = 200001
+	poolNotExist     = 400003
+	subsysNotExist   = 500002
+	volumeNotExist   = 600002
+	snapshotNotExist = 700002
+	accountNotExist  = 800001
+	groupNotExist    = 800002
 
-	poolAlreadyExists     = "400002"
-	subsysAlreadyExists   = "500001"
-	volumeAlreadyExists   = "600001"
-	snapshotAlreadyExists = "700001"
+	poolAlreadyExists     = 400002
+	subsysAlreadyExists   = 500001
+	volumeAlreadyExists   = 600001
+	snapshotAlreadyExists = 700001
 )
 
-var notExistsCodeSet = map[string]struct{}{
+var notExistsCodeSet = map[int]struct{}{
 	poolNotExist:     {},
 	subsysNotExist:   {},
 	volumeNotExist:   {},
@@ -59,7 +58,7 @@ var notExistsCodeSet = map[string]struct{}{
 	taskNotExist:     {},
 }
 
-var existsCodeSet = map[string]struct{}{
+var existsCodeSet = map[int]struct{}{
 	poolAlreadyExists:     {},
 	subsysAlreadyExists:   {},
 	volumeAlreadyExists:   {},
@@ -186,7 +185,7 @@ type Response struct {
 // SDKError struct is used save error code and message
 type SDKError struct {
 	StatusCode *int
-	Code       *string
+	Code       *int
 	Message    *string
 	Data       *string
 	errMsg     *string
@@ -199,10 +198,10 @@ func (err *SDKError) SetErrMsg(msg string) {
 
 func (err *SDKError) Error() string {
 	if err.errMsg == nil {
-		str := fmt.Sprintf("SDKError:\n   RequestId: %s\n   StatusCode: %d\n   Code: %s\n   Message: %s\n   Data: %s\n",
+		str := fmt.Sprintf("SDKError:\n   RequestId: %s\n   StatusCode: %d\n   Code: %d\n   Message: %s\n   Data: %s\n",
 			StringValue(err.RequestId),
 			IntValue(err.StatusCode),
-			StringValue(err.Code),
+			IntValue(err.Code),
 			StringValue(err.Message),
 			StringValue(err.Data))
 		err.SetErrMsg(str)
@@ -242,9 +241,10 @@ func NewResponse(httpResponse *http.Response) (res *Response) {
 func NewSDKError(obj map[string]interface{}) *SDKError {
 	err := &SDKError{}
 	if val, ok := obj["code"].(int); ok {
-		err.Code = String(strconv.Itoa(val))
+		err.Code = Int(val)
 	} else if val, ok := obj["code"].(string); ok {
-		err.Code = String(val)
+		_val, _ := strconv.ParseInt(val, 10, 64)
+		err.Code = Int(int(_val))
 	}
 
 	if obj["request_id"] != nil {
@@ -901,7 +901,7 @@ func ToJSONString(a interface{}) *string {
 	case []byte:
 		return String(string(v))
 	case io.Reader:
-		byt, err := ioutil.ReadAll(v)
+		byt, err := io.ReadAll(v)
 		if err != nil {
 			return nil
 		}
@@ -930,7 +930,7 @@ func AssertAsMap(a interface{}) (_result map[string]interface{}, _err error) {
 }
 
 func ReadAsJSON(body io.Reader) (result interface{}, err error) {
-	byt, err := ioutil.ReadAll(body)
+	byt, err := io.ReadAll(body)
 	if err != nil {
 		return
 	}
@@ -939,7 +939,7 @@ func ReadAsJSON(body io.Reader) (result interface{}, err error) {
 	}
 	r, ok := body.(io.ReadCloser)
 	if ok {
-		r.Close()
+		_ = r.Close()
 	}
 	d := json.NewDecoder(bytes.NewReader(byt))
 	d.UseNumber()

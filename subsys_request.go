@@ -101,7 +101,7 @@ func ListSubsys(parameter *parameters.ListSubsys, requestId string) (
 	}
 
 	_request := horizontal.NewRequest(requestId)
-	_request.SetPath("pool")
+	_request.SetPath("subsys")
 	_request.SetQuery(parameter.GetQuery())
 
 	resp, err := _client.callApi(_request)
@@ -179,8 +179,8 @@ func UnexportSubsys(parameter *parameters.UnexportSubsys, requestId string) erro
 	return err
 }
 
-func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChap,
-	requestId string) (*responses.RetrieveSubsysChap, error) {
+func RetrieveSubsysChap(parameter *parameters.RetrieveSubsysChap, requestId string) (
+	*responses.RetrieveSubsysChap, error) {
 	_client, err := newClient()
 	if err != nil {
 		return nil, err
@@ -228,6 +228,21 @@ func RemoveSubsysChap(parameter *parameters.RemoveSubsysChap, requestId string) 
 	return err
 }
 
+func SubsysAddVLAN(parameter *parameters.SubsysAddVLAN, requestId string) error {
+	_client, err := newClient()
+	if err != nil {
+		return err
+	}
+
+	_request := horizontal.NewRequest(requestId)
+	_request.SetPath(parameter.GetPath())
+	_request.SetMethodPUT()
+	_request.SetBody(parameter)
+
+	_, err = _client.callApi(_request)
+	return err
+}
+
 func RetrieveSubsysVLAN(parameter *parameters.RetrieveSubsysVLAN, requestId string) (
 	*responses.RetrieveSubsysVLAN, error) {
 	_client, err := newClient()
@@ -248,7 +263,7 @@ func RetrieveSubsysVLAN(parameter *parameters.RetrieveSubsysVLAN, requestId stri
 	return data, err
 }
 
-func SubsysAddVLAN(parameter *parameters.SubsysAddVLAN, requestId string) error {
+func SubsysRemoveVLAN(parameter *parameters.SubsysRemoveVLAN, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -263,7 +278,7 @@ func SubsysAddVLAN(parameter *parameters.SubsysAddVLAN, requestId string) error 
 	return err
 }
 
-func SubsysRemoveVLAN(parameter *parameters.SubsysRemoveVLAN, requestId string) error {
+func DeleteSubsysVLAN(parameter *parameters.DeleteSubsysVLAN, requestId string) error {
 	_client, err := newClient()
 	if err != nil {
 		return err
@@ -271,7 +286,6 @@ func SubsysRemoveVLAN(parameter *parameters.SubsysRemoveVLAN, requestId string) 
 
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
-	_request.SetMethodPUT()
 
 	_, err = _client.callApi(_request)
 	return err
@@ -285,6 +299,7 @@ func SubsysBindHostGroup(parameter *parameters.SubsysBindHostGroup, requestId st
 
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
+	_request.SetBody(parameter)
 	_request.SetMethodPUT()
 
 	_, err = _client.callApi(_request)

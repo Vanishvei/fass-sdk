@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	poolName          = "pool1"
+	poolName          = "fast_pool"
 	subsysName        = "s1000"
 	subsysName1       = "s2000"
 	subsysName2       = "s3000"
@@ -30,7 +30,7 @@ var (
 	volumeName        = "v1000"
 	snapshotName      = "s1"
 	accountName       = "account_1"
-	password          = "admin@1234"
+	password          = "admin@123456"
 	hostGroupName     = "group_1"
 
 	addIQN = map[string]string{
@@ -39,6 +39,9 @@ var (
 	addNQN = map[string]string{
 		"nqn.2014-08.org.nvmexpress:uuid:c013a7f3-e873-46a3-87d8-d5aeccd27732": "client1",
 	}
+
+	addVLANList    = []string{"172.18.0.*", "172.19.10.0/24"}
+	removeVLANList = []string{"172.18.0.*"}
 )
 
 func setup() {
@@ -48,8 +51,12 @@ func setup() {
 
 	_, err := fassSDK.CreateAccount(&createAccountParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fmt.Printf("%s", err.Error())
-		panic(fmt.Sprintf("create account %s failed\n", accountName))
+		if ex, ok := err.(*fassSDK.SDKError); ok {
+			if *(ex).Code != 800001 {
+				fmt.Printf("%s", err.Error())
+				panic(fmt.Sprintf("create account %s failed\n", accountName))
+			}
+		}
 	}
 
 	createGroupParameter := parameters.AddHostToHostGroup{}
@@ -59,8 +66,12 @@ func setup() {
 
 	_, err = fassSDK.AddHostToHostGroup(&createGroupParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fmt.Printf("%s", err.Error())
-		panic(fmt.Sprintf("add client to host group %s failed\n", hostGroupName))
+		if ex, ok := err.(*fassSDK.SDKError); ok {
+			if *(ex).Code != 810002 {
+				fmt.Printf("%s", err.Error())
+				panic(fmt.Sprintf("add client to host group %s failed\n", hostGroupName))
+			}
+		}
 	}
 }
 
@@ -236,7 +247,7 @@ func TestUnexportSubsys(t *testing.T) {
 	}
 }
 
-func TestSetSubsysAuth(t *testing.T) {
+func TestSubsysBindHostGroup(t *testing.T) {
 	parameter := parameters.SubsysBindHostGroup{}
 	parameter.SetSubsysName(subsysName)
 	parameter.SetHostGroupName(hostGroupName)
@@ -292,6 +303,17 @@ func TestRetrieveSubsysChap(t *testing.T) {
 	}
 }
 
+func TestRemoveSubsysChap(t *testing.T) {
+	parameter := parameters.RemoveSubsysChap{}
+	parameter.SetSubsysName(subsysName)
+
+	err := fassSDK.RemoveSubsysChap(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
 func TestSubsysUnbindHostGroup(t *testing.T) {
 	parameter := parameters.SubsysUnbindHostGroup{}
 	parameter.SetSubsysName(subsysName)
@@ -303,11 +325,46 @@ func TestSubsysUnbindHostGroup(t *testing.T) {
 	}
 }
 
-func TestRemoveSubsysChap(t *testing.T) {
-	parameter := parameters.RemoveSubsysChap{}
+func TestSubsysAddVLAN(t *testing.T) {
+	parameter := parameters.SubsysAddVLAN{}
+	parameter.SetSubsysName(subsysName)
+	parameter.SetVLANList(addVLANList)
+
+	err := fassSDK.SubsysAddVLAN(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
+func TestRetrieveSubsysVLAN(t *testing.T) {
+	parameter := parameters.RetrieveSubsysVLAN{}
 	parameter.SetSubsysName(subsysName)
 
-	err := fassSDK.RemoveSubsysChap(&parameter, uuid.New().String())
+	_, err := fassSDK.RetrieveSubsysVLAN(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
+func TestSubsysRemoveVLAN(t *testing.T) {
+	parameter := parameters.SubsysRemoveVLAN{}
+	parameter.SetSubsysName(subsysName)
+	parameter.SetVLANList(removeVLANList)
+
+	err := fassSDK.SubsysRemoveVLAN(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
+func TestDeleteSubsysVLAN(t *testing.T) {
+	parameter := parameters.DeleteSubsysVLAN{}
+	parameter.SetSubsysName(subsysName)
+
+	err := fassSDK.DeleteSubsysVLAN(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()

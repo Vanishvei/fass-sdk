@@ -1,6 +1,6 @@
 package requests
 
-// File       : acl.go
+// File       : account_request.go
 // Path       : requests
 // Time       : CST 2023/5/5 9:53
 // Group      : Taocloudx-FASS
@@ -85,6 +85,7 @@ func DeleteAccount(parameters *parameters.DeleteAccount, requestId string) error
 
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameters.GetPath())
+	_request.SetMethodDELETE()
 
 	_, err = _client.callApi(_request)
 	return err

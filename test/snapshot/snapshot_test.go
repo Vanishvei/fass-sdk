@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	poolName            = "pool1"
+	poolName            = "fast_pool"
 	subsysName          = "s1000"
 	volumeName          = "v1000"
 	snapshotName        = "snap1000"
