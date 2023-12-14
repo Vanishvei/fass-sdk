@@ -84,7 +84,7 @@ func RevertSnapshot(parameter *parameters.RevertSnapshot, requestId string) erro
 
 	_request := horizontal.NewRequest(requestId)
 	_request.SetBody(parameter)
-	_request.SetPath("snapshot")
+	_request.SetPath("snapshot/revert")
 	_request.SetMethodPUT()
 
 	_, err = _client.callApi(_request)
