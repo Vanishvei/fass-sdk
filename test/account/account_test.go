@@ -22,15 +22,37 @@ import (
 
 var (
 	accountName     = "account_1"
-	accountPassword = "admin@123"
+	accountPassword = "admin@123456"
 )
 
 func TestCreateAccount(t *testing.T) {
 	parameter := parameters.CreateAccount{}
 	parameter.SetAccountName(accountName)
 	parameter.SetPassword(accountPassword)
-	_, err := fassSDK.CreateAccount(&parameter, uuid.New().String())
+	resp, err := fassSDK.CreateAccount(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(resp.AccountName, accountName) {
+		fmt.Printf("wrong account name")
+		t.FailNow()
+	}
+}
+
+func TestDuplicateCreateAccount(t *testing.T) {
+	parameter := parameters.CreateAccount{}
+	parameter.SetAccountName(accountName)
+	parameter.SetPassword(accountPassword)
+	_, err := fassSDK.CreateAccount(&parameter, uuid.New().String())
+	if reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	ex, _ := err.(*fassSDK.SDKError)
+	if !ex.IsExists() {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
@@ -38,9 +60,14 @@ func TestCreateAccount(t *testing.T) {
 
 func TestListAccount(t *testing.T) {
 	parameter := parameters.ListAccount{}
-	_, err := fassSDK.ListAccount(&parameter, uuid.New().String())
+	resp, err := fassSDK.ListAccount(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(len(*resp), 1) {
+		fmt.Printf("wrong account count")
 		t.FailNow()
 	}
 }

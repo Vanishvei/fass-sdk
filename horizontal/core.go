@@ -46,6 +46,7 @@ const (
 	subsysAlreadyExists   = 500001
 	volumeAlreadyExists   = 600001
 	snapshotAlreadyExists = 700001
+	accountAlreadyExists  = 800001
 )
 
 var notExistsCodeSet = map[int]struct{}{
@@ -63,6 +64,7 @@ var existsCodeSet = map[int]struct{}{
 	subsysAlreadyExists:   {},
 	volumeAlreadyExists:   {},
 	snapshotAlreadyExists: {},
+	accountAlreadyExists:  {},
 }
 
 // Request is used wrap http request

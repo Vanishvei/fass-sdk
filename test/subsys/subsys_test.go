@@ -104,9 +104,14 @@ func TestCreateSubsys(t *testing.T) {
 	parameter.SetIops(2000)
 	parameter.SetFormatROW()
 
-	_, err := fassSDK.CreateSubsys(&parameter, uuid.New().String())
+	resp, err := fassSDK.CreateSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(resp.SubsysName, subsysName) {
+		fmt.Printf("wrong response")
 		t.FailNow()
 	}
 }
@@ -115,9 +120,33 @@ func TestRetrieveSubsys(t *testing.T) {
 	parameter := parameters.RetrieveSubsys{}
 	parameter.SetSubsysName(subsysName)
 
-	_, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
+	resp, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(resp.SubsysName, subsysName) {
+		fmt.Printf("wrong response")
+		t.FailNow()
+	}
+}
+
+func TestDuplicateCreateSubsys(t *testing.T) {
+	parameter := parameters.CreateSubsys{}
+	parameter.SetName(subsysName)
+	parameter.SetPoolName(poolName)
+	parameter.SetCapacityGB(1)
+
+	_, err := fassSDK.CreateSubsys(&parameter, uuid.New().String())
+	if reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	ex, _ := err.(*fassSDK.SDKError)
+	if !ex.IsExists() {
+		fmt.Printf("wrong response")
 		t.FailNow()
 	}
 }
@@ -141,6 +170,7 @@ func TestRetrieveSubsysNotExists(t *testing.T) {
 			return
 		}
 	}
+
 	fmt.Printf("%s", err.Error())
 	t.FailNow()
 }
@@ -155,11 +185,16 @@ func TestCreateSubsysFromVolume(t *testing.T) {
 	parameter.InheritQos()
 	parameter.EnableISCSI()
 
-	_, err := fassSDK.CreateSubsysFromVolume(&parameter, requestId)
+	resp, err := fassSDK.CreateSubsysFromVolume(&parameter, requestId)
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 		return
+	}
+
+	if !reflect.DeepEqual(resp.SubsysName, subsysName1) {
+		fmt.Printf("wrong response")
+		t.FailNow()
 	}
 
 	err = deleteSubsys(subsysName1)
@@ -189,11 +224,16 @@ func TestCreateSubsysFromSnapshot(t *testing.T) {
 	parameter.InheritQos()
 	parameter.EnableISCSI()
 
-	_, err = fassSDK.CreateSubsysFromSnapshot(&parameter, requestId)
+	resp, err := fassSDK.CreateSubsysFromSnapshot(&parameter, requestId)
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 		return
+	}
+
+	if !reflect.DeepEqual(resp.SubsysName, subsysName2) {
+		fmt.Printf("wrong response")
+		t.FailNow()
 	}
 
 	deleteSnapshotParameter := parameters.DeleteSnapshot{}
@@ -341,21 +381,41 @@ func TestRetrieveSubsysVLAN(t *testing.T) {
 	parameter := parameters.RetrieveSubsysVLAN{}
 	parameter.SetSubsysName(subsysName)
 
-	_, err := fassSDK.RetrieveSubsysVLAN(&parameter, uuid.New().String())
+	resp, err := fassSDK.RetrieveSubsysVLAN(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(len(resp.VLANList), 2) {
+		fmt.Printf("wrong vlan count")
 		t.FailNow()
 	}
 }
 
 func TestSubsysRemoveVLAN(t *testing.T) {
+	requestId := uuid.New().String()
 	parameter := parameters.SubsysRemoveVLAN{}
 	parameter.SetSubsysName(subsysName)
 	parameter.SetVLANList(removeVLANList)
 
-	err := fassSDK.SubsysRemoveVLAN(&parameter, uuid.New().String())
+	err := fassSDK.SubsysRemoveVLAN(&parameter, requestId)
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	confirmParameter := parameters.RetrieveSubsysVLAN{}
+	confirmParameter.SetSubsysName(subsysName)
+
+	resp, err := fassSDK.RetrieveSubsysVLAN(&confirmParameter, requestId)
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("confirm vlan failed due to %s", err.Error())
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(len(resp.VLANList), 1) {
+		fmt.Printf("wrong vlan count")
 		t.FailNow()
 	}
 }
