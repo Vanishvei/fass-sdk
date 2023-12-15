@@ -150,6 +150,7 @@ func StopFlattenVolume(parameter *parameters.StopFlattenVolume, requestId string
 
 	_request := horizontal.NewRequest(requestId)
 	_request.SetPath(parameter.GetPath())
+	_request.SetMethodPUT()
 
 	_, err = _client.callApi(_request)
 	return err

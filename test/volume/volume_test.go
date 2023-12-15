@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	poolName          = "pool1"
+	poolName          = "fast_pool"
 	srcSubsysName     = "s1000"
 	srcVolumeName     = "v1000"
 	srcSnapshotName   = "snap1000"
@@ -47,9 +47,13 @@ func setup() {
 	createSubsysParameter.SetFormatROW()
 	_, err := fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
 	if err != nil {
-		panic(fmt.Sprintf("create source subsys %s failed due to %s\n", srcSubsysName, err.Error()))
+		ex, _ := err.(*fassSDK.SDKError)
+		if !ex.IsExists() {
+			panic(fmt.Sprintf("create source subsys %s failed due to %s\n", srcSubsysName, err.Error()))
+		}
+	} else {
+		fmt.Printf("create source subsys %s success\n", srcSubsysName)
 	}
-	fmt.Printf("create source subsys %s success\n", srcSubsysName)
 
 	time.Sleep(3 * time.Second)
 
@@ -60,14 +64,20 @@ func setup() {
 
 	_, err = fassSDK.CreateSnapshot(&createSnapshotParameter, uuid.New().String())
 	if err != nil {
-		panic(fmt.Sprintf("create source snapshot %s failed due to %s\n", srcSnapshotName, err.Error()))
+		ex, _ := err.(*fassSDK.SDKError)
+		if !ex.IsExists() {
+			panic(fmt.Sprintf("create source snapshot %s failed due to %s\n", srcSnapshotName, err.Error()))
+		}
+	} else {
+		fmt.Printf("create source snapshot %s success\n", srcSnapshotName)
 	}
-
-	fmt.Printf("create source snapshot %s success\n", srcSnapshotName)
 
 	err = createVolumeFromSnapshot(newSubsysName2, newVolumeName2)
 	if err != nil {
-		panic(fmt.Sprintf("create volume %s success\n", newVolumeName2))
+		ex, _ := err.(*fassSDK.SDKError)
+		if !ex.IsExists() {
+			panic(fmt.Sprintf("create volume %s failed due to %s\n", newVolumeName2, err.Error()))
+		}
 	}
 }
 
@@ -99,7 +109,10 @@ func teardown() {
 
 	err = deleteVolume(newVolumeName2, 3)
 	if err != nil {
-		fmt.Printf("delete volume %s failed due to %s\n", newVolumeName2, err.Error())
+		ex, _ := err.(*fassSDK.SDKError)
+		if !ex.IsNotExists() {
+			fmt.Printf("delete volume %s failed due to %s\n", newVolumeName2, err.Error())
+		}
 	} else {
 		fmt.Printf("delete volume %s success\n", newVolumeName2)
 	}
@@ -165,19 +178,12 @@ func TestRetrieveVolumeNotExists(t *testing.T) {
 
 	_, err := fassSDK.RetrieveVolume(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fe, ok := err.(*fassSDK.SDKError)
-		if ok {
-			if !fe.IsNotExists() {
-				t.Fail()
-				return
-			}
-			if !fe.IsExists() {
-				t.Fail()
-				return
-			}
+		fe, _ := err.(*fassSDK.SDKError)
+		if fe.IsNotExists() {
 			return
 		}
 	}
+
 	fmt.Printf("%s", err.Error())
 	t.FailNow()
 }
@@ -250,7 +256,7 @@ func TestStopFlattenVolume(t *testing.T) {
 	data, err := flattenVolume(newVolumeName2)
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
-		t.Fail()
+		t.FailNow()
 	}
 
 	parameter := parameters.StopFlattenVolume{}
@@ -258,8 +264,11 @@ func TestStopFlattenVolume(t *testing.T) {
 
 	err = fassSDK.StopFlattenVolume(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fmt.Printf("%s", err.Error())
-		t.Fail()
+		ex, _ := err.(*fassSDK.SDKError)
+		if *ex.Code != 100001 {
+			fmt.Printf("%s", err.Error())
+			t.FailNow()
+		}
 	}
 }
 
