@@ -9,6 +9,7 @@ package account
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"testing"
 
@@ -21,9 +22,44 @@ import (
 )
 
 var (
+	poolName        = "fast_pool"
+	subsysName      = "s1000"
+	volumeName      = "v1000"
 	accountName     = "account_1"
 	accountPassword = "admin@123456"
 )
+
+func setup() {
+	fmt.Printf("create subsys %s\n", subsysName)
+	createSubsysParameter := parameters.CreateSubsys{}
+	createSubsysParameter.SetPoolName(poolName)
+	createSubsysParameter.SetCapacityGB(10)
+	createSubsysParameter.SetSectorSize4096()
+	createSubsysParameter.SetName(subsysName)
+	createSubsysParameter.SetVolumeName(volumeName)
+	createSubsysParameter.EnableISCSI()
+	createSubsysParameter.SetFormatROW()
+	_, err := fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
+	if err != nil {
+		panic(fmt.Sprintf("create subsys %s failed due to %s\n", subsysName, err.Error()))
+	}
+
+	fmt.Printf("create subsys %s success\n", subsysName)
+}
+
+func teardown() {
+	fmt.Printf("delete subsys %s\n", subsysName)
+	deleteSubsysParameter := parameters.DeleteSubsys{}
+	deleteSubsysParameter.SetSubsysName(subsysName)
+	deleteSubsysParameter.ForceDelete()
+	deleteSubsysParameter.DeleteVolume()
+	err := fassSDK.DeleteSubsys(&deleteSubsysParameter, uuid.New().String())
+	if err != nil {
+		panic(fmt.Sprintf("delete subsys %s failed due to %s\n", subsysName, err.Error()))
+	}
+
+	fmt.Printf("delete subsys %s success\n", subsysName)
+}
 
 func TestCreateAccount(t *testing.T) {
 	parameter := parameters.CreateAccount{}
@@ -88,6 +124,42 @@ func TestRetrieveAccount(t *testing.T) {
 	}
 }
 
+func TestSetSubsysChap(t *testing.T) {
+	parameter := parameters.SetSubsysChap{}
+	parameter.SetSubsysName(subsysName)
+	parameter.SetAccountName(accountName)
+
+	err := fassSDK.SetSubsysChap(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
+func TestDeleteAccountForbidden(t *testing.T) {
+	parameter := parameters.DeleteAccount{}
+	parameter.SetAccountName(accountName)
+	err := fassSDK.DeleteAccount(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		ex, _ := err.(*fassSDK.SDKError)
+		if *ex.Code != 801001 {
+			fmt.Printf("%s", err.Error())
+			t.FailNow()
+		}
+	}
+}
+
+func TestRemoveSubsysChap(t *testing.T) {
+	parameter := parameters.RemoveSubsysChap{}
+	parameter.SetSubsysName(subsysName)
+
+	err := fassSDK.RemoveSubsysChap(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+}
+
 func TestDeleteAccount(t *testing.T) {
 	parameter := parameters.DeleteAccount{}
 	parameter.SetAccountName(accountName)
@@ -96,4 +168,11 @@ func TestDeleteAccount(t *testing.T) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
+}
+
+func TestMain(m *testing.M) {
+	setup()
+	code := m.Run()
+	teardown()
+	os.Exit(code)
 }

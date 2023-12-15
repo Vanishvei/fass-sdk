@@ -97,12 +97,13 @@ func TestCreateSubsys(t *testing.T) {
 	parameter.SetName(subsysName)
 	parameter.SetPoolName(poolName)
 	parameter.SetVolumeName(volumeName)
-	parameter.SetSectorSize4096()
-	parameter.SetCapacityGB(10)
-	parameter.EnableISCSI()
-	parameter.SetBpsMB(1000)
 	parameter.SetIops(2000)
+	parameter.SetBpsMB(1000)
+	parameter.SetCapacityGB(10)
+	parameter.SetStripeWidth4Shift128k()
+	parameter.SetSectorSize4096()
 	parameter.SetFormatROW()
+	parameter.EnableISCSI()
 
 	resp, err := fassSDK.CreateSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
