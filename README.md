@@ -65,6 +65,8 @@ fassSDK.InitConfig(
     &port,
     &readTimeout,
     &connectTimeout,
+    &backoff,
+    &retryCount,
 )
 ```
 
