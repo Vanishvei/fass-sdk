@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var allowVersionSet = map[string]string{"3.0.1": "v3", "3.1.0": "v3"}
+var allowVersionSet = map[string]string{"3.0.1": "v3", "3.1.0": "v3", "3.2.0": "v3"}
 
 type Config struct {
 	Port            *int      `json:"port"`

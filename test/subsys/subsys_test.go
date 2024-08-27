@@ -8,6 +8,7 @@ package subsys
 // Description:
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -51,7 +52,8 @@ func setup() {
 
 	_, err := fassSDK.CreateAccount(&createAccountParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		if ex, ok := err.(*fassSDK.SDKError); ok {
+		var ex *fassSDK.SDKError
+		if errors.As(err, &ex) {
 			if *(ex).Code != 800001 {
 				fmt.Printf("%s", err.Error())
 				panic(fmt.Sprintf("create account %s failed\n", accountName))
@@ -66,7 +68,8 @@ func setup() {
 
 	_, err = fassSDK.AddHostToHostGroup(&createGroupParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		if ex, ok := err.(*fassSDK.SDKError); ok {
+		var ex *fassSDK.SDKError
+		if errors.As(err, &ex) {
 			if *(ex).Code != 810002 {
 				fmt.Printf("%s", err.Error())
 				panic(fmt.Sprintf("add client to host group %s failed\n", hostGroupName))
@@ -145,11 +148,17 @@ func TestDuplicateCreateSubsys(t *testing.T) {
 		t.FailNow()
 	}
 
-	ex, _ := err.(*fassSDK.SDKError)
-	if !ex.IsExists() {
+	var ex *fassSDK.SDKError
+	ok := errors.As(err, &ex)
+	if ok {
+		if ex.IsExists() {
+			return
+		}
 		fmt.Printf("wrong response")
 		t.FailNow()
 	}
+	fmt.Printf("%s", err.Error())
+	t.FailNow()
 }
 
 func TestRetrieveSubsysNotExists(t *testing.T) {
@@ -158,7 +167,8 @@ func TestRetrieveSubsysNotExists(t *testing.T) {
 
 	_, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fe, ok := err.(*fassSDK.SDKError)
+		var fe *fassSDK.SDKError
+		ok := errors.As(err, &fe)
 		if ok {
 			if !fe.IsNotExists() {
 				t.Fail()

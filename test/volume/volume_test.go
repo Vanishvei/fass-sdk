@@ -8,6 +8,7 @@ package volume
 // Description:
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -47,10 +48,14 @@ func setup() {
 	createSubsysParameter.SetFormatROW()
 	_, err := fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
 	if err != nil {
-		ex, _ := err.(*fassSDK.SDKError)
-		if !ex.IsExists() {
-			panic(fmt.Sprintf("create source subsys %s failed due to %s\n", srcSubsysName, err.Error()))
+		var ex *fassSDK.SDKError
+		ok := errors.As(err, &ex)
+		if ok {
+			if !ex.IsExists() {
+				panic(fmt.Sprintf("create source subsys %s failed due to %s exists\n", srcSubsysName, srcSubsysName))
+			}
 		}
+		panic(fmt.Sprintf("create source subsys %s failed due to %s\n", srcSubsysName, err.Error()))
 	} else {
 		fmt.Printf("create source subsys %s success\n", srcSubsysName)
 	}

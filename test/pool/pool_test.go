@@ -8,6 +8,7 @@ package pool
 // Description:
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -38,7 +39,8 @@ func TestRetrievePoolNotExists(t *testing.T) {
 	parameter.SetPoolName(invalidPoolName)
 	_, err := fassSDK.RetrievePool(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fe, ok := err.(*fassSDK.SDKError)
+		var fe *fassSDK.SDKError
+		ok := errors.As(err, &fe)
 		if ok {
 			if !fe.IsNotExists() {
 				t.FailNow()

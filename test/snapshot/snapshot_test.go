@@ -8,10 +8,12 @@ package snapshot
 // Description:
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -45,6 +47,7 @@ func setup() {
 	}
 
 	fmt.Printf("create subsys %s success\n", subsysName)
+	time.Sleep(3 * time.Second)
 }
 
 func teardown() {
@@ -89,7 +92,8 @@ func TestRetrieveSnapshotNotExists(t *testing.T) {
 	parameter.SetSnapshotName(invalidSnapshotName)
 	_, err := fassSDK.RetrieveSnapshot(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		fe, ok := err.(*fassSDK.SDKError)
+		var fe *fassSDK.SDKError
+		ok := errors.As(err, &fe)
 		if ok {
 			if !fe.IsNotExists() {
 				t.Fail()
