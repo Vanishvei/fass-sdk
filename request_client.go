@@ -18,6 +18,44 @@ func InitConfig(endpointList *[]string, port, readTimeout, connectTimeout, backo
 	horizontal.InitConfig(endpointList, port, readTimeout, connectTimeout, backoff, retryCount)
 }
 
+type requestParams struct {
+	ProhibitRetries bool
+}
+
+type RequestParams interface {
+	apply(*requestParams)
+}
+
+type funcOption struct {
+	f func(*requestParams)
+}
+
+func (fdo *funcOption) apply(do *requestParams) {
+	fdo.f(do)
+}
+
+func newFuncOption(f func(*requestParams)) *funcOption {
+	return &funcOption{
+		f: f,
+	}
+}
+
+func ProhibitRetries(prohibitRetries bool) RequestParams {
+	return newFuncOption(func(rp *requestParams) {
+		rp.ProhibitRetries = prohibitRetries
+	})
+}
+
+func defaultOptions() requestParams {
+	return requestParams{
+		ProhibitRetries: false,
+	}
+}
+
+type defaultRequestParams struct {
+	defaultOpts requestParams
+}
+
 type fassClient struct {
 	Port       *int
 	Endpoint   *string
@@ -59,7 +97,7 @@ func (client *fassClient) init(config *horizontal.Config) (_err error) {
 	return nil
 }
 
-func (client *fassClient) doRequest(request *horizontal.Request) (_result *responses.SuzakuResponse, _err error) {
+func (client *fassClient) doRequest(request *horizontal.Request, prohibitRetries bool) (_result *responses.SuzakuResponse, _err error) {
 	_err = horizontal.Validate(request)
 	if _err != nil {
 		return _result, _err
@@ -96,7 +134,7 @@ func (client *fassClient) doRequest(request *horizontal.Request) (_result *respo
 		}
 
 		_resp, _err = func() (*responses.SuzakuResponse, error) {
-			response_, _err := horizontal.DoRequest(request, _runtime)
+			response_, _err := horizontal.DoRequest(request, _runtime, prohibitRetries)
 			if _err != nil {
 				return _result, _err
 			}
@@ -130,6 +168,7 @@ func (client *fassClient) doRequest(request *horizontal.Request) (_result *respo
 			return __result, errors.New(string(errMsg))
 
 		}()
+
 		if !horizontal.BoolValue(horizontal.Retryable(_err)) {
 			break
 		}
@@ -138,7 +177,7 @@ func (client *fassClient) doRequest(request *horizontal.Request) (_result *respo
 	return _resp, _err
 }
 
-func (client *fassClient) callApi(request *horizontal.Request) (_result *responses.SuzakuResponse, _err error) {
+func (client *fassClient) callApi(request *horizontal.Request, opts ...RequestParams) (_result *responses.SuzakuResponse, _err error) {
 	if horizontal.BoolValue(horizontal.IsUnset(request)) {
 		_err = horizontal.NewSDKError(map[string]interface{}{
 			"code":       2,
@@ -149,11 +188,19 @@ func (client *fassClient) callApi(request *horizontal.Request) (_result *respons
 		return _result, _err
 	}
 
+	de := &defaultRequestParams{
+		defaultOpts: defaultOptions(),
+	}
+
+	for _, opt := range opts {
+		opt.apply(&de.defaultOpts)
+	}
+
 	request.SetPort(client.Port)
 	request.SetEndpoint(client.Endpoint)
 	request.SetApiVersion(client.ApiVersion)
 
-	_resp, _err := client.doRequest(request)
+	_resp, _err := client.doRequest(request, de.defaultOpts.ProhibitRetries)
 	if _err != nil {
 		_err = horizontal.NewSDKError(map[string]interface{}{
 			"code":       1,

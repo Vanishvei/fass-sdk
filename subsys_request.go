@@ -25,7 +25,7 @@ func CreateSubsys(parameter *parameters.CreateSubsys, requestId string) (
 	_request.SetBody(parameter)
 	_request.SetPath("subsys")
 	_request.SetMethodPOST()
-	resp, err := _client.callApi(_request)
+	resp, err := _client.callApi(_request, ProhibitRetries(true))
 	if err != nil {
 		return nil, err
 	}
@@ -109,9 +109,15 @@ func ListSubsys(parameter *parameters.ListSubsys, requestId string) (
 		return nil, err
 	}
 
-	data := &responses.ListSubsys{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
+	ls := &responses.ListSubsys{}
+	if resp.Token != nil {
+		ls.Token = resp.Token.String()
+		ls.Total = *resp.Total
+		ls.PageNum = *resp.PageNum
+		ls.PageSize = *resp.PageSize
+	}
+	err = horizontal.ConvertToSuzakuResp(resp.Data, &ls.Data)
+	return ls, err
 }
 
 func RetrieveSubsys(parameter *parameters.RetrieveSubsys, requestId string) (

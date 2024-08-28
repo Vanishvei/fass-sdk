@@ -302,7 +302,10 @@ func Recover(in interface{}) error {
 
 // ReadBody is used read response body
 func (response *Response) ReadBody() (body []byte, err error) {
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(response.Body)
+
 	var buffer [512]byte
 	result := bytes.NewBuffer(nil)
 

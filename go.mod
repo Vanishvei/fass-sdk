@@ -1,16 +1,14 @@
 module github.com/Vanishvei/fass-sdk
 
-go 1.20
+go 1.21.6
 
 require (
-	github.com/google/uuid v1.3.0
+	github.com/Vanishvei/fass-sdk-parameters v1.1.4
+	github.com/Vanishvei/fass-sdk-responses v1.1.1
+	github.com/google/uuid v1.6.0
 	github.com/json-iterator/go v1.1.12
 	github.com/modern-go/reflect2 v1.0.2
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require (
-	github.com/Vanishvei/fass-sdk-parameters v1.1.3 // indirect
-	github.com/Vanishvei/fass-sdk-responses v1.0.9 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
-)
+require github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect

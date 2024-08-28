@@ -13,6 +13,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -27,6 +28,7 @@ var (
 	subsysName        = "s1000"
 	subsysName1       = "s2000"
 	subsysName2       = "s3000"
+	subsysName4       = "s4000"
 	invalidSubsysName = "s9999"
 	volumeName        = "v1000"
 	snapshotName      = "s1"
@@ -76,6 +78,27 @@ func setup() {
 			}
 		}
 	}
+
+	time.Sleep(2 * time.Second)
+	createSubsysParameter := parameters.CreateSubsys{}
+	createSubsysParameter.SetPoolName(poolName)
+	createSubsysParameter.SetCapacityGB(10)
+	createSubsysParameter.SetSectorSize4096()
+	createSubsysParameter.SetName(subsysName4)
+	_, err = fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
+	if err != nil {
+		var ex *fassSDK.SDKError
+		ok := errors.As(err, &ex)
+		if ok {
+			if !ex.IsExists() {
+				panic(fmt.Sprintf("create subsys %s failed due to %s exists\n", subsysName4, subsysName4))
+			}
+		}
+		panic(fmt.Sprintf("create subsys %s failed due to %s\n", subsysName4, err.Error()))
+	} else {
+		fmt.Printf("create subsys %s success\n", subsysName4)
+	}
+	time.Sleep(3 * time.Second)
 }
 
 func teardown() {
@@ -92,6 +115,18 @@ func teardown() {
 	err = fassSDK.DeleteAccount(&deleteAccountParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("delete account %s failed\n", accountName)
+	}
+
+	deleteSubsysParameter := parameters.DeleteSubsys{}
+	deleteSubsysParameter.SetSubsysName(subsysName4)
+	deleteSubsysParameter.ForceDelete()
+	deleteSubsysParameter.DeleteVolume()
+
+	err = fassSDK.DeleteSubsys(&deleteSubsysParameter, uuid.New().String())
+	if err != nil {
+		fmt.Printf("delete subsys %s failed due to %s\n", subsysName4, err.Error())
+	} else {
+		fmt.Printf("delete subsys %s success\n", subsysName4)
 	}
 }
 
@@ -266,10 +301,34 @@ func TestCreateSubsysFromSnapshot(t *testing.T) {
 
 func TestListSubsys(t *testing.T) {
 	parameter := parameters.ListSubsys{}
+	parameter.SetPageSize(1)
 
-	_, err := fassSDK.ListSubsys(&parameter, uuid.New().String())
+	resp, err := fassSDK.ListSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if len(resp.Token) == 0 {
+		return
+	}
+
+	token, err := uuid.Parse(resp.Token)
+	if err != nil {
+		fmt.Printf("Invalid token %s", resp.Token)
+		t.FailNow()
+	}
+
+	parameter.SetPageNum(2)
+	parameter.SetPageToken(token)
+	resp, err = fassSDK.ListSubsys(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if len(resp.Data) != 1 {
+		fmt.Printf("The amount of data is incorrect")
 		t.FailNow()
 	}
 }

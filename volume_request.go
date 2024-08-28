@@ -25,14 +25,20 @@ func ListVolume(parameter *parameters.ListVolume, requestId string) (
 	_request.SetPath("volume")
 	_request.SetQuery(parameter.GetQuery())
 
-	resp, err := _client.callApi(_request)
+	resp, err := _client.callApi(_request, ProhibitRetries(true))
 	if err != nil {
 		return nil, err
 	}
 
-	data := &responses.ListVolume{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
+	lv := &responses.ListVolume{}
+	if resp.Token != nil {
+		lv.Token = resp.Token.String()
+		lv.Total = *resp.Total
+		lv.PageNum = *resp.PageNum
+		lv.PageSize = *resp.PageSize
+	}
+	err = horizontal.ConvertToSuzakuResp(resp.Data, &lv.Data)
+	return lv, err
 }
 
 func RetrieveVolume(parameter *parameters.RetrieveVolume, requestId string) (

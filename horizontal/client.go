@@ -32,7 +32,7 @@ var hookDo = func(fn func(req *http.Request) (*http.Response, error)) func(req *
 	return fn
 }
 
-func DoRequest(request *Request, requestRuntime map[string]interface{}) (response *Response, err error) {
+func DoRequest(request *Request, requestRuntime map[string]interface{}, prohibitRetries bool) (response *Response, err error) {
 	runtimeObject := NewRuntimeObject(requestRuntime)
 
 	requestURL := fmt.Sprintf(
@@ -80,9 +80,22 @@ func DoRequest(request *Request, requestRuntime map[string]interface{}) (respons
 	}
 
 	res, err := hookDo(client.Do)(httpRequest)
+	if prohibitRetries {
+		if err != nil {
+			return response, err
+		}
+
+		response = NewResponse(res)
+		for key, value := range res.Header {
+			if len(value) != 0 {
+				response.Headers[strings.ToLower(key)] = String(value[0])
+			}
+		}
+		return response, err
+	}
+
 	if err != nil {
 		GlobalConfig.SwitchEndpoint()
-
 		res, err = hookDo(client.Do)(httpRequest)
 		if err != nil {
 			return response, err

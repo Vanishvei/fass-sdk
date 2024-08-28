@@ -32,6 +32,7 @@ var (
 	newVolumeName1    = "v2000"
 	newSubsysName2    = "s3000"
 	newVolumeName2    = "v3000"
+	newSubsysName3    = "s4000"
 	invalidVolumeName = "v9999"
 	taskId            = ""
 )
@@ -58,6 +59,25 @@ func setup() {
 		panic(fmt.Sprintf("create source subsys %s failed due to %s\n", srcSubsysName, err.Error()))
 	} else {
 		fmt.Printf("create source subsys %s success\n", srcSubsysName)
+	}
+
+	createSubsysParameter = parameters.CreateSubsys{}
+	createSubsysParameter.SetPoolName(poolName)
+	createSubsysParameter.SetCapacityGB(10)
+	createSubsysParameter.SetSectorSize4096()
+	createSubsysParameter.SetName(newSubsysName3)
+	_, err = fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
+	if err != nil {
+		var ex *fassSDK.SDKError
+		ok := errors.As(err, &ex)
+		if ok {
+			if !ex.IsExists() {
+				panic(fmt.Sprintf("create subsys %s failed due to %s exists\n", newSubsysName3, newSubsysName3))
+			}
+		}
+		panic(fmt.Sprintf("create subsys %s failed due to %s\n", newSubsysName3, err.Error()))
+	} else {
+		fmt.Printf("create subsys %s success\n", newSubsysName3)
 	}
 
 	time.Sleep(3 * time.Second)
@@ -87,12 +107,24 @@ func setup() {
 }
 
 func teardown() {
+	deleteSubsysParameter := parameters.DeleteSubsys{}
+	deleteSubsysParameter.SetSubsysName(newSubsysName3)
+	deleteSubsysParameter.ForceDelete()
+	deleteSubsysParameter.DeleteVolume()
+
+	err := fassSDK.DeleteSubsys(&deleteSubsysParameter, uuid.New().String())
+	if err != nil {
+		fmt.Printf("delete subsys %s failed due to %s\n", srcSubsysName, err.Error())
+	} else {
+		fmt.Printf("delete subsys %s success\n", srcSubsysName)
+	}
+
 	fmt.Printf("delete source snapshot %s\n", srcSnapshotName)
 	deleteSnapshotParameter := parameters.DeleteSnapshot{}
 	deleteSnapshotParameter.SetVolumeName(srcVolumeName)
 	deleteSnapshotParameter.SetSnapshotName(srcSnapshotName)
 
-	err := fassSDK.DeleteSnapshot(&deleteSnapshotParameter, uuid.New().String())
+	err = fassSDK.DeleteSnapshot(&deleteSnapshotParameter, uuid.New().String())
 	if err != nil {
 		fmt.Printf("delete source snapshot %s failed due to %s\n", srcSnapshotName, err.Error())
 	} else {
@@ -100,7 +132,7 @@ func teardown() {
 	}
 
 	fmt.Printf("delete source subsys %s\n", srcSubsysName)
-	deleteSubsysParameter := parameters.DeleteSubsys{}
+	deleteSubsysParameter = parameters.DeleteSubsys{}
 	deleteSubsysParameter.SetSubsysName(srcSubsysName)
 	deleteSubsysParameter.ForceDelete()
 	deleteSubsysParameter.DeleteVolume()
@@ -114,9 +146,12 @@ func teardown() {
 
 	err = deleteVolume(newVolumeName2, 3)
 	if err != nil {
-		ex, _ := err.(*fassSDK.SDKError)
-		if !ex.IsNotExists() {
-			fmt.Printf("delete volume %s failed due to %s\n", newVolumeName2, err.Error())
+		var ex *fassSDK.SDKError
+		ok := errors.As(err, &ex)
+		if ok {
+			if !ex.IsNotExists() {
+				fmt.Printf("delete volume %s failed due to %s\n", newVolumeName2, err.Error())
+			}
 		}
 	} else {
 		fmt.Printf("delete volume %s success\n", newVolumeName2)
@@ -158,10 +193,34 @@ func TestCreateVolume(t *testing.T) {
 
 func TestListVolume(t *testing.T) {
 	parameter := parameters.ListVolume{}
+	parameter.SetPageSize(1)
 
-	_, err := fassSDK.ListVolume(&parameter, uuid.New().String())
+	resp, err := fassSDK.ListVolume(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if len(resp.Token) == 0 {
+		return
+	}
+
+	token, err := uuid.Parse(resp.Token)
+	if err != nil {
+		fmt.Printf("Invalid token %s", resp.Token)
+		t.FailNow()
+	}
+
+	parameter.SetPageNum(2)
+	parameter.SetPageToken(token)
+	resp, err = fassSDK.ListVolume(&parameter, uuid.New().String())
+	if !reflect.DeepEqual(err, nil) {
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
+	}
+
+	if len(resp.Data) != 1 {
+		fmt.Printf("The amount of data is incorrect")
 		t.FailNow()
 	}
 }
