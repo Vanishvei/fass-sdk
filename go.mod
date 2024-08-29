@@ -3,8 +3,8 @@ module github.com/Vanishvei/fass-sdk
 go 1.21.6
 
 require (
-	github.com/Vanishvei/fass-sdk-parameters v1.1.4
-	github.com/Vanishvei/fass-sdk-responses v1.1.1
+	github.com/Vanishvei/fass-sdk-parameters v1.1.5
+	github.com/Vanishvei/fass-sdk-responses v1.1.2
 	github.com/google/uuid v1.6.0
 	github.com/json-iterator/go v1.1.12
 	github.com/modern-go/reflect2 v1.0.2
