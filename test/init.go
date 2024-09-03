@@ -38,7 +38,7 @@ func init() {
 	_configYaml := path.Join(parentDir, suzakuApiConfigYaml)
 	_, err := os.Lstat(_configYaml)
 	if os.IsNotExist(err) {
-		panic(fmt.Sprintf("config yml file %s not exists", _configYaml))
+		panic(fmt.Sprintf("Config yaml file %s not exists", _configYaml))
 	}
 
 	data, err := os.ReadFile(_configYaml)

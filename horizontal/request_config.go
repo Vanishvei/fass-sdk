@@ -45,6 +45,21 @@ func (c *Config) SwitchEndpoint() {
 	panic("Switch endpoint failed due to no normal nodes are available")
 }
 
+func (c *Config) SetEndpoint(endpoint string) {
+	for _, item := range *GlobalConfig.EndpointList {
+		if item == endpoint {
+			GlobalConfig.CurrentEndpoint = &endpoint
+			return
+		}
+	}
+
+	panic(fmt.Sprintf("Set endpoint failed due to not allow endpoint %s", endpoint))
+}
+
+func (c *Config) GetEndpoint() string {
+	return *GlobalConfig.CurrentEndpoint
+}
+
 var GlobalConfig *Config
 
 func InitConfig(endpointList *[]string, port, readTimeout, connectTimeout, backoff, retryCount *int) {
@@ -103,12 +118,12 @@ func getServerInfo(endpoint string) (version string, qps int, err error) {
 }
 
 type serverInfo struct {
+	ApiQps      int    `json:"api_qps"`
+	Time        string `json:"time"`
 	Version     string `json:"version"`
 	BuildDate   string `json:"build_date"`
-	DeployModel string `json:"deploy_model"`
 	WorkModel   string `json:"work_model"`
-	Time        string `json:"time"`
-	ApiQps      int    `json:"api_qps"`
+	DeployModel string `json:"deploy_model"`
 }
 
 func (s serverInfo) APIVersion(endpoint string) string {
