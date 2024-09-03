@@ -194,11 +194,11 @@ type SDKError struct {
 	RequestId  *string
 }
 
-func (err *SDKError) SetErrMsg(msg string) {
+func (err SDKError) SetErrMsg(msg string) {
 	err.errMsg = String(msg)
 }
 
-func (err *SDKError) Error() string {
+func (err SDKError) Error() string {
 	if err.errMsg == nil {
 		str := fmt.Sprintf("SDKError:\n   RequestId: %s\n   StatusCode: %d\n   Code: %d\n   Message: %s\n   Data: %s\n",
 			StringValue(err.RequestId),
@@ -211,12 +211,12 @@ func (err *SDKError) Error() string {
 	return StringValue(err.errMsg)
 }
 
-func (err *SDKError) IsExists() bool {
+func (err SDKError) IsExists() bool {
 	_, ok := existsCodeSet[*err.Code]
 	return ok
 }
 
-func (err *SDKError) IsNotExists() bool {
+func (err SDKError) IsNotExists() bool {
 	_, ok := notExistsCodeSet[*err.Code]
 	return ok
 }
@@ -240,8 +240,8 @@ func NewResponse(httpResponse *http.Response) (res *Response) {
 }
 
 // NewSDKError is used for shortly create SDKError object
-func NewSDKError(obj map[string]interface{}) *SDKError {
-	err := &SDKError{}
+func NewSDKError(obj map[string]interface{}) error {
+	err := SDKError{}
 	if val, ok := obj["code"].(int); ok {
 		err.Code = Int(val)
 	} else if val, ok := obj["code"].(string); ok {
