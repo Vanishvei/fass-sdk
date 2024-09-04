@@ -194,9 +194,9 @@ type SDKError struct {
 	RequestId  *string
 }
 
-func (err SDKError) SetErrMsg(msg string) {
-	err.errMsg = String(msg)
-}
+//func (err SDKError) SetErrMsg(msg string) {
+//	err.errMsg = String(msg)
+//}
 
 func (err SDKError) Error() string {
 	if err.errMsg == nil {
@@ -206,7 +206,8 @@ func (err SDKError) Error() string {
 			IntValue(err.Code),
 			StringValue(err.Message),
 			StringValue(err.Data))
-		err.SetErrMsg(str)
+		err.errMsg = &str
+		//err.SetErrMsg(str)
 	}
 	return StringValue(err.errMsg)
 }
@@ -256,6 +257,11 @@ func NewSDKError(obj map[string]interface{}) error {
 	if obj["message"] != nil {
 		err.Message = String(obj["message"].(string))
 	}
+
+	if obj["statusCode"] != nil {
+		err.StatusCode = Int(obj["statusCode"].(int))
+	}
+
 	if data := obj["data"]; data != nil {
 		r := reflect.ValueOf(data)
 		if r.Kind().String() == "map" {
@@ -264,18 +270,18 @@ func NewSDKError(obj map[string]interface{}) error {
 			for _, key := range tmp {
 				res[key.String()] = r.MapIndex(key).Interface()
 			}
-			if statusCode := res["statusCode"]; statusCode != nil {
-				if code, ok := statusCode.(int); ok {
-					err.StatusCode = Int(code)
-				} else if tmp, ok := statusCode.(string); ok {
-					code, err_ := strconv.Atoi(tmp)
-					if err_ == nil {
-						err.StatusCode = Int(code)
-					}
-				} else if code, ok := statusCode.(*int); ok {
-					err.StatusCode = code
-				}
-			}
+			//if statusCode := res["statusCode"]; statusCode != nil {
+			//	if code, ok := statusCode.(int); ok {
+			//		err.StatusCode = Int(code)
+			//	} else if tmp, ok := statusCode.(string); ok {
+			//		code, err_ := strconv.Atoi(tmp)
+			//		if err_ == nil {
+			//			err.StatusCode = Int(code)
+			//		}
+			//	} else if code, ok := statusCode.(*int); ok {
+			//		err.StatusCode = code
+			//	}
+			//}
 		}
 		byt, _ := json.Marshal(data)
 		err.Data = String(string(byt))
@@ -574,11 +580,17 @@ func Retryable(err error) *bool {
 	if err == nil {
 		return Bool(false)
 	}
-	if realErr, ok := err.(*SDKError); ok {
+
+	var realErr *SDKError
+	if errors.As(err, &realErr) {
 		if realErr.StatusCode == nil {
 			return Bool(false)
 		}
 		code := IntValue(realErr.StatusCode)
+		if code == http.StatusNotFound || code == http.StatusMethodNotAllowed || code == http.StatusForbidden {
+			return Bool(false)
+		}
+
 		return Bool(code >= http.StatusInternalServerError)
 	}
 	return Bool(true)

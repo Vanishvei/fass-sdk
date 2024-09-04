@@ -156,8 +156,8 @@ func (client *fassClient) doRequest(request *horizontal.Request, prohibitRetries
 
 			__result := &responses.SuzakuResponse{}
 			_err = horizontal.Convert(map[string]interface{}{
-				"headers":    response_.Headers,
-				"statusCode": horizontal.IntValue(response_.StatusCode),
+				"headers": response_.Headers,
+				"code":    horizontal.IntValue(response_.StatusCode),
 			}, __result)
 
 			if _err != nil {
@@ -165,9 +165,13 @@ func (client *fassClient) doRequest(request *horizontal.Request, prohibitRetries
 			}
 
 			errMsg, _ := response_.ReadBody()
-			return __result, errors.New(string(errMsg))
-
+			__result.Message = string(errMsg)
+			return __result, errors.New(__result.Message)
 		}()
+
+		if prohibitRetries {
+			break
+		}
 
 		if !horizontal.BoolValue(horizontal.Retryable(_err)) {
 			break
@@ -180,7 +184,7 @@ func (client *fassClient) doRequest(request *horizontal.Request, prohibitRetries
 func (client *fassClient) callApi(request *horizontal.Request, opts ...RequestParams) (_result *responses.SuzakuResponse, _err error) {
 	if horizontal.BoolValue(horizontal.IsUnset(request)) {
 		_err = horizontal.NewSDKError(map[string]interface{}{
-			"code":       2,
+			"code":       300006,
 			"message":    "'params' can not be unset",
 			"request_id": "",
 			"data":       nil,
@@ -202,12 +206,19 @@ func (client *fassClient) callApi(request *horizontal.Request, opts ...RequestPa
 
 	_resp, _err := client.doRequest(request, de.defaultOpts.ProhibitRetries)
 	if _err != nil {
-		_err = horizontal.NewSDKError(map[string]interface{}{
-			"code":       1,
+		sdkError := map[string]interface{}{
 			"message":    _err.Error(),
 			"request_id": horizontal.StringValue(request.GetRequestId()),
 			"data":       nil,
-		})
+		}
+
+		if _resp != nil {
+			if _resp.Code != 0 {
+				sdkError["statusCode"] = _resp.Code
+			}
+		}
+
+		_err = horizontal.NewSDKError(sdkError)
 		return _result, _err
 	}
 

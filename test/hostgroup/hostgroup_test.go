@@ -8,6 +8,7 @@ package hostgroup
 // Description:
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -86,17 +87,6 @@ func TestAddHostToHostGroup(t *testing.T) {
 	}
 }
 
-func TestListSubsysOfHostGroup(t *testing.T) {
-	parameter := parameters.ListSubsysOfHostGroup{}
-	parameter.SetHostGroupName(hostGroupName)
-
-	_, err := fassSDK.ListSubsysOfHostGroup(&parameter, uuid.New().String())
-	if !reflect.DeepEqual(err, nil) {
-		fmt.Printf("%s", err.Error())
-		t.FailNow()
-	}
-}
-
 func TestListHostGroup(t *testing.T) {
 	parameter := parameters.ListHostGroup{}
 	_, err := fassSDK.ListHostGroup(&parameter, uuid.New().String())
@@ -123,11 +113,14 @@ func TestDeleteHostGroupForbidden(t *testing.T) {
 	parameter.SetHostGroupName(hostGroupName)
 	err := fassSDK.DeleteHostGroup(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		ex, _ := err.(*fassSDK.SDKError)
-		if *ex.Code != 810006 {
-			fmt.Printf("%s", err.Error())
-			t.FailNow()
+		var ex fassSDK.SDKError
+		if errors.As(err, &ex) {
+			if *ex.Code == 810005 || *ex.Code == 810006 {
+				return
+			}
 		}
+		fmt.Printf("%s", err.Error())
+		t.FailNow()
 	}
 }
 

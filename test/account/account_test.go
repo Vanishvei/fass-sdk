@@ -8,6 +8,7 @@ package account
 // Description:
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -87,11 +88,15 @@ func TestDuplicateCreateAccount(t *testing.T) {
 		t.FailNow()
 	}
 
-	ex, _ := err.(*fassSDK.SDKError)
-	if !ex.IsExists() {
-		fmt.Printf("%s", err.Error())
-		t.FailNow()
+	var ex fassSDK.SDKError
+	if errors.As(err, &ex) {
+		if ex.IsExists() {
+			return
+		}
 	}
+	fmt.Printf("%s", err.Error())
+	t.FailNow()
+
 }
 
 func TestListAccount(t *testing.T) {
@@ -141,12 +146,15 @@ func TestDeleteAccountForbidden(t *testing.T) {
 	parameter.SetAccountName(accountName)
 	err := fassSDK.DeleteAccount(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		ex, _ := err.(*fassSDK.SDKError)
-		if *ex.Code != 801001 {
-			fmt.Printf("%s", err.Error())
-			t.FailNow()
+		var ex fassSDK.SDKError
+		if errors.As(err, &ex) {
+			if *ex.Code == 801001 {
+				return
+			}
 		}
 	}
+	fmt.Printf("%s", err.Error())
+	t.FailNow()
 }
 
 func TestRemoveSubsysChap(t *testing.T) {

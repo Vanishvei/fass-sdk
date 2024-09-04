@@ -28,6 +28,7 @@ var (
 	subsysName          = "s1000"
 	volumeName          = "v1000"
 	snapshotName        = "snap1000"
+	snapshotName2       = "snap2000"
 	invalidSnapshotName = "snap9999"
 )
 
@@ -48,6 +49,17 @@ func setup() {
 
 	fmt.Printf("create subsys %s success\n", subsysName)
 	time.Sleep(3 * time.Second)
+
+	parameter := parameters.CreateSnapshot{}
+	parameter.SetVolumeName(volumeName)
+	parameter.SetSnapshotName(snapshotName)
+	_, err = fassSDK.CreateSnapshot(&parameter, uuid.New().String())
+	if err != nil {
+		panic(fmt.Sprintf("create snapshot %s failed due to %s\n", snapshotName, err.Error()))
+	}
+
+	fmt.Printf("Create snapshot %s success\n", snapshotName)
+	time.Sleep(3 * time.Second)
 }
 
 func teardown() {
@@ -67,12 +79,13 @@ func teardown() {
 func TestCreateSnapshot(t *testing.T) {
 	parameter := parameters.CreateSnapshot{}
 	parameter.SetVolumeName(volumeName)
-	parameter.SetSnapshotName(snapshotName)
+	parameter.SetSnapshotName(snapshotName2)
 	_, err := fassSDK.CreateSnapshot(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
 		fmt.Printf("%s", err.Error())
 		t.FailNow()
 	}
+	time.Sleep(3 * time.Second)
 }
 
 func TestRetrieveSnapshot(t *testing.T) {
@@ -92,9 +105,8 @@ func TestRetrieveSnapshotNotExists(t *testing.T) {
 	parameter.SetSnapshotName(invalidSnapshotName)
 	_, err := fassSDK.RetrieveSnapshot(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		var fe *fassSDK.SDKError
-		ok := errors.As(err, &fe)
-		if ok {
+		var fe fassSDK.SDKError
+		if errors.As(err, &fe) {
 			if !fe.IsNotExists() {
 				t.Fail()
 				return

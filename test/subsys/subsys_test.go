@@ -54,13 +54,14 @@ func setup() {
 
 	_, err := fassSDK.CreateAccount(&createAccountParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		var ex *fassSDK.SDKError
+		var ex fassSDK.SDKError
 		if errors.As(err, &ex) {
-			if *(ex).Code != 800001 {
-				fmt.Printf("%s", err.Error())
-				panic(fmt.Sprintf("create account %s failed\n", accountName))
+			if *(ex).Code == 800001 {
+				return
 			}
 		}
+		fmt.Printf("%s", err.Error())
+		panic(fmt.Sprintf("create account %s failed\n", accountName))
 	}
 
 	createGroupParameter := parameters.AddHostToHostGroup{}
@@ -70,13 +71,14 @@ func setup() {
 
 	_, err = fassSDK.AddHostToHostGroup(&createGroupParameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		var ex *fassSDK.SDKError
+		var ex fassSDK.SDKError
 		if errors.As(err, &ex) {
-			if *(ex).Code != 810002 {
-				fmt.Printf("%s", err.Error())
-				panic(fmt.Sprintf("add client to host group %s failed\n", hostGroupName))
+			if *(ex).Code == 810002 {
+				return
 			}
 		}
+		fmt.Printf("%s", err.Error())
+		panic(fmt.Sprintf("add client to host group %s failed\n", hostGroupName))
 	}
 
 	time.Sleep(2 * time.Second)
@@ -87,14 +89,14 @@ func setup() {
 	createSubsysParameter.SetName(subsysName4)
 	_, err = fassSDK.CreateSubsys(&createSubsysParameter, uuid.New().String())
 	if err != nil {
-		var ex *fassSDK.SDKError
-		ok := errors.As(err, &ex)
-		if ok {
+		var ex fassSDK.SDKError
+		if errors.As(err, &ex) {
 			if !ex.IsExists() {
 				panic(fmt.Sprintf("create subsys %s failed due to %s exists\n", subsysName4, subsysName4))
 			}
+		} else {
+			panic(fmt.Sprintf("create subsys %s failed due to %s\n", subsysName4, err.Error()))
 		}
-		panic(fmt.Sprintf("create subsys %s failed due to %s\n", subsysName4, err.Error()))
 	} else {
 		fmt.Printf("create subsys %s success\n", subsysName4)
 	}
@@ -153,6 +155,8 @@ func TestCreateSubsys(t *testing.T) {
 		fmt.Printf("wrong response")
 		t.FailNow()
 	}
+
+	time.Sleep(3 * time.Second)
 }
 
 func TestRetrieveSubsys(t *testing.T) {
@@ -183,14 +187,11 @@ func TestDuplicateCreateSubsys(t *testing.T) {
 		t.FailNow()
 	}
 
-	var ex *fassSDK.SDKError
-	ok := errors.As(err, &ex)
-	if ok {
+	var ex fassSDK.SDKError
+	if errors.As(err, &ex) {
 		if ex.IsExists() {
 			return
 		}
-		fmt.Printf("wrong response")
-		t.FailNow()
 	}
 	fmt.Printf("%s", err.Error())
 	t.FailNow()
@@ -202,18 +203,11 @@ func TestRetrieveSubsysNotExists(t *testing.T) {
 
 	_, err := fassSDK.RetrieveSubsys(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		var fe *fassSDK.SDKError
-		ok := errors.As(err, &fe)
-		if ok {
-			if !fe.IsNotExists() {
-				t.Fail()
+		var fe fassSDK.SDKError
+		if errors.As(err, &fe) {
+			if fe.IsNotExists() {
 				return
 			}
-			if fe.IsExists() {
-				t.Fail()
-				return
-			}
-			return
 		}
 	}
 

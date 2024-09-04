@@ -35,26 +35,6 @@ func ListHostGroup(parameters *parameters.ListHostGroup, requestId string) (
 	return data, err
 }
 
-func ListSubsysOfHostGroup(parameters *parameters.ListSubsysOfHostGroup, requestId string) (
-	*responses.ListSubsysOfHostGroup, error) {
-	_client, err := newClient()
-	if err != nil {
-		return nil, err
-	}
-
-	_request := horizontal.NewRequest(requestId)
-	_request.SetPath(parameters.GetPath())
-
-	resp, err := _client.callApi(_request)
-	if err != nil {
-		return nil, err
-	}
-
-	data := &responses.ListSubsysOfHostGroup{}
-	err = horizontal.ConvertToSuzakuResp(resp.Data, data)
-	return data, err
-}
-
 func DeleteHostGroup(parameters *parameters.DeleteHostGroup, requestId string) error {
 	_client, err := newClient()
 	if err != nil {

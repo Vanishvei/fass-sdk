@@ -39,16 +39,11 @@ func TestRetrievePoolNotExists(t *testing.T) {
 	parameter.SetPoolName(invalidPoolName)
 	_, err := fassSDK.RetrievePool(&parameter, uuid.New().String())
 	if !reflect.DeepEqual(err, nil) {
-		var fe *fassSDK.SDKError
-		ok := errors.As(err, &fe)
-		if ok {
-			if !fe.IsNotExists() {
-				t.FailNow()
+		var fe fassSDK.SDKError
+		if errors.As(err, &fe) {
+			if fe.IsNotExists() {
+				return
 			}
-			if fe.IsExists() {
-				t.FailNow()
-			}
-			return
 		}
 	}
 	fmt.Printf("%s", err.Error())
